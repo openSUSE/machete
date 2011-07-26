@@ -79,17 +79,17 @@ end
 racc_action_table = [
     10,     2,     3,     4,     5,    17,    18,    11,     2,     3,
      4,     5,     2,     3,     4,     5,     9,    14,    15,    19,
-    14 ]
+    14,    11 ]
 
 racc_action_check = [
      6,     0,     0,     0,     0,    12,    12,     6,    11,    11,
     11,    11,    19,    19,    19,    19,     2,     9,    10,    14,
-    18 ]
+    18,    21 ]
 
 racc_action_pointer = [
     -2,   nil,     8,   nil,   nil,   nil,     0,   nil,   nil,    15,
     18,     5,    -4,   nil,     8,   nil,   nil,   nil,    18,     9,
-   nil,   nil ]
+   nil,    14 ]
 
 racc_action_default = [
    -13,    -4,    -5,   -10,   -11,   -12,   -13,    -1,    -3,   -13,
@@ -97,18 +97,18 @@ racc_action_default = [
     -8,    -9 ]
 
 racc_goto_table = [
-     7,    13,     6,    12,   nil,   nil,   nil,   nil,   nil,   nil,
-    20,    16,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    21 ]
+     6,    13,    16,    12,   nil,   nil,   nil,   nil,   nil,   nil,
+    20,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    21 ]
 
 racc_goto_check = [
-     2,     6,     1,     5,   nil,   nil,   nil,   nil,   nil,   nil,
-     6,     2,   nil,   nil,   nil,   nil,   nil,   nil,   nil,     2 ]
+     1,     6,     2,     5,   nil,   nil,   nil,   nil,   nil,   nil,
+     6,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,     1 ]
 
 racc_goto_pointer = [
-   nil,     2,     0,   nil,   nil,    -6,    -8 ]
+   nil,     0,    -9,   nil,   nil,    -6,    -8 ]
 
 racc_goto_default = [
-   nil,   nil,   nil,     8,     1,   nil,   nil ]
+   nil,   nil,     7,     8,     1,   nil,   nil ]
 
 racc_reduce_table = [
   0, 0, :racc_error,

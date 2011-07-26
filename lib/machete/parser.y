@@ -32,7 +32,7 @@ node : CLASS_NAME {
 attrs : attr
       | attrs "," attr { result = val[0].merge(val[2]) }
 
-attr : VAR_NAME "=" primary { result = { val[0].to_sym => val[2] } }
+attr : VAR_NAME "=" expression { result = { val[0].to_sym => val[2] } }
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
         | INTEGER { result = LiteralMatcher.new(val[0].to_i)          }
