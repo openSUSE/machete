@@ -26,17 +26,20 @@ module Machete
       @foo = NodeMatcher.new(:Foo)
       @foo_a = NodeMatcher.new(:Foo, :a => @i42)
       @foo_ab = NodeMatcher.new(:Foo, :a => @i42, :b => @i43)
+
+      @ch4243 = ChoiceMatcher.new([@i42, @i43])
+      @ch424344 = ChoiceMatcher.new([@i42, @i43, @i44])
     end
 
     def node_matcher_with_attr(attr)
       NodeMatcher.new(:Foo, { attr => @i42 })
     end
 
-    # Canonical expression is "42".
+    # Canonical expression is "42 | 43".
     it "parses expression" do
       '42'.should be_parsed_as(@i42)
-      '42 | 43'.should be_parsed_as(ChoiceMatcher.new([@i42, @i43]))
-      '42 | 43 | 44'.should be_parsed_as(ChoiceMatcher.new([@i42, @i43, @i44]))
+      '42 | 43'.should be_parsed_as(@ch4243)
+      '42 | 43 | 44'.should be_parsed_as(@ch424344)
     end
 
     # Canonical primary is "42".
@@ -48,10 +51,10 @@ module Machete
     # Canonical node is "Foo".
     it "parses node" do
       'Foo'.should be_parsed_as(@foo)
-      'Foo<a = 42>'.should be_parsed_as(@foo_a)
+      'Foo<a = 42, b = 43>'.should be_parsed_as(@foo_ab)
     end
 
-    # Canonical attrs is "a = 42".
+    # Canonical attrs is "a = 42, b = 43".
     it "parses attrs" do
       'Foo<a = 42>'.should be_parsed_as(@foo_a)
       'Foo<a = 42, b = 43>'.should be_parsed_as(@foo_ab)
@@ -59,7 +62,7 @@ module Machete
 
     # Canonical attr is "a = 42".
     it "parses attr" do
-      'Foo<a = 42>'.should be_parsed_as(@foo_a)
+      'Foo<a = 42 | 43>'.should be_parsed_as(NodeMatcher.new(:Foo, :a => @ch4243))
     end
 
     # Canonical literal is "42".
