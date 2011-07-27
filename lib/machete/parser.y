@@ -51,7 +51,30 @@ literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
             end
             result = LiteralMatcher.new(value)
           }
-        | STRING  { result = LiteralMatcher.new(val[0][1..-2])        }
+        | STRING {
+            quote = val[0][0..0]
+            value = if quote == "'"
+              val[0][1..-2].gsub("\\\\", "\\").gsub("\\'", "'")
+            elsif quote == '"'
+              val[0][1..-2].
+                gsub("\\\\", "\\").
+                gsub('\\"', '"').
+                gsub("\\n", "\n").
+                gsub("\\t", "\t").
+                gsub("\\r", "\r").
+                gsub("\\f", "\f").
+                gsub("\\v", "\v").
+                gsub("\\a", "\a").
+                gsub("\\e", "\e").
+                gsub("\\b", "\b").
+                gsub("\\s", "\s").
+                gsub(/\\([0-7]{1,3})/) { $1.to_i(8).chr }.
+                gsub(/\\x([0-9a-fA-F]{1,2})/) { $1.to_i(16).chr }
+            else
+              raise "Unknown quote: #{quote.inspect}."
+            end
+            result = LiteralMatcher.new(value)
+          }
 
 ---- header
 
@@ -98,7 +121,35 @@ COMPLEX_TOKENS = [
       )
     /x
   ],
-  [:STRING,     /^('[^']*'|"[^"]*")/]
+  [
+    :STRING,
+    /^
+      (
+        '                 # sinqle-quoted string
+          (
+            \\[\\']           # escape
+            |
+            [^']              # regular character
+          )*
+        '
+        |
+        "                 # double-quoted string
+          (
+            \\                # escape
+            (
+              [\\"ntrfvaebs]    # one-character escape
+              |
+              [0-7]{1,3}        # octal number escape
+              |
+              x[0-9a-fA-F]{1,2} # hexadecimal number escape
+            )
+            |
+            [^"]              # regular character
+          )*
+        "
+      )
+    /x
+  ]
 ]
 
 def next_token
