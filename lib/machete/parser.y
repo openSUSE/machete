@@ -35,7 +35,22 @@ attrs : attr
 attr : VAR_NAME "=" expression { result = { val[0].to_sym => val[2] } }
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
-        | INTEGER { result = LiteralMatcher.new(val[0].to_i)          }
+        | INTEGER {
+            value = if val[0] =~ /^0[bB]/
+              val[0][2..-1].to_i(2)
+            elsif val[0] =~ /^0[oO]/
+              val[0][2..-1].to_i(8)
+            elsif val[0] =~ /^0[dD]/
+              val[0][2..-1].to_i(10)
+            elsif val[0] =~ /^0[xX]/
+              val[0][2..-1].to_i(16)
+            elsif val[0] =~ /^0/
+              val[0][1..-1].to_i(8)
+            else
+              val[0].to_i
+            end
+            result = LiteralMatcher.new(value)
+          }
         | STRING  { result = LiteralMatcher.new(val[0][1..-2])        }
 
 ---- header
@@ -57,14 +72,32 @@ private
 
 SIMPLE_TOKENS = ["|", "<", ">", ",", "="]
 
-# FIXME: The patterns for VAR_NAME, CLASS_NAME, SYMBOL and INTEGER tokens are
-#        simpler than they should be. Implement them according to Ruby's parse.y
-#        (from 1.8.7-p352).
+# FIXME: The patterns for VAR_NAME, CLASS_NAME, SYMBOL tokens are simpler than
+#        they should be. Implement them according to Ruby's parse.y (from
+#        1.8.7-p352).
 COMPLEX_TOKENS = [
   [:VAR_NAME,   /^[a-z_][a-zA-Z0-9_]*/],
   [:CLASS_NAME, /^[A-Z][a-zA-Z0-9_]*/],
   [:SYMBOL,     /^:[a-zA-Z_][a-zA-Z0-9_]*/],
-  [:INTEGER,    /^[+-]?\d+/],
+  [
+    :INTEGER,
+    /^
+      [+-]?                               # sign
+      (
+        0[bB][01]+(_[01]+)*               # binary (prefixed)
+        |
+        0[oO][0-7]+(_[0-7]+)*             # octal (prefixed)
+        |
+        0[dD]\d+(_\d+)*                   # decimal (prefixed)
+        |
+        0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)* # hexadecimal (prefixed)
+        |
+        0[0-7]*(_[0-7]+)*                 # octal (unprefixed)
+        |
+        [1-9]\d*(_\d+)*                   # decimal (unprefixed)
+      )
+    /x
+  ],
   [:STRING,     /^('[^']*'|"[^"]*")/]
 ]
 
