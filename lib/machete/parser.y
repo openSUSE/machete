@@ -76,8 +76,6 @@ literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
             result = LiteralMatcher.new(value)
           }
 
----- header
-
 ---- inner
 
 include Matchers

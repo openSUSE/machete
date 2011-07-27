@@ -5,12 +5,10 @@
 #
 
 require 'racc/parser.rb'
-
-
 module Machete
   class Parser < Racc::Parser
 
-module_eval(<<'...end parser.y/module_eval...', 'parser.y', 82)
+module_eval(<<'...end parser.y/module_eval...', 'parser.y', 80)
 
 include Matchers
 
