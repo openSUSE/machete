@@ -8,9 +8,7 @@ Installation
 
 You need to install [Rubinius](http://rubini.us/) first. You can then install Machete:
 
-    $ git clone git://github.com/openSUSE/machete.git
-
-The library is not available as a gem yet (this will come soon hopefully).
+    $ gem install machete
 
 Usage
 -----

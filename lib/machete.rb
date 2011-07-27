@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/machete/matchers")
 require File.expand_path(File.dirname(__FILE__) + "/machete/parser")
+require File.expand_path(File.dirname(__FILE__) + "/machete/version")
 
 module Machete
   # Matches a Rubinius AST node against a pattern.
