@@ -3,8 +3,6 @@ Machete
 
 Machete is a simple tool for matching Rubinius AST nodes against patterns. You can use it if you are writing any kind of tool that processes Ruby code and needs to do some work on specific types of nodes, needs to find patterns in the code, etc.
 
-**This is currently work in progress and it's probably not much useful yet.**
-
 Installation
 ------------
 
