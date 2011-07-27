@@ -21,4 +21,34 @@ module Machete
   def self.matches?(node, pattern)
     Parser.new.parse(pattern).matches?(node)
   end
+
+  # Finds all nodes in a Rubinius AST matching a pattern.
+  #
+  # @param [Rubinius::AST::Node] ast tree to search
+  # @param [String] pattern pattern to match the nodes against (see {file:README.md} for syntax description)
+  #
+  # @example
+  #   Machete.find('42 + 43 + 44'.to_ast, 'FixnumLiteral')
+  #   # => [
+  #   #      #<Rubinius::AST::FixnumLiteral:0x10b0 @value=44 @line=1>,
+  #   #      #<Rubinius::AST::FixnumLiteral:0x10b8 @value=43 @line=1>,
+  #   #      #<Rubinius::AST::FixnumLiteral:0x10c0 @value=42 @line=1>
+  #   #    ]
+  #
+  # @return [Array] list of matching nodes (in unspecified order)
+  #
+  # @raise [Matchete::Parser::SyntaxError] if the pattern is invalid
+  def self.find(ast, pattern)
+    matcher = Parser.new.parse(pattern)
+
+    result = []
+    result << ast if matcher.matches?(ast)
+
+    ast.walk(true) do |dummy, node|
+      result << node if matcher.matches?(node)
+      true
+    end
+
+    result
+  end
 end

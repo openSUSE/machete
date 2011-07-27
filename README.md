@@ -21,7 +21,9 @@ First, require the library:
 
     require "machete"
 
-Machete has just one entry point: the `Machete.matches?` method. It matches a Rubinus AST node against a pattern:
+You can now use one of two methods Machete offers: `Machete.matches?` and `Machete.find`.
+
+The `Machete.matches?` method matches a Rubinus AST node against a pattern:
 
     Machete.matches?('foo.bar'.to_ast, 'Send<receiver = Send<receiver = Self, name = :foo>, name = :bar>')
     # => true
@@ -29,9 +31,16 @@ Machete has just one entry point: the `Machete.matches?` method. It matches a Ru
     Machete.matches?('42'.to_ast, 'Send<receiver = Send<receiver = Self, name = :foo>, name = :bar>')
     # => false
 
-See below for pattern syntax description.
+(See below for pattern syntax description.)
 
-In very near future, a capability to search in the whole AST tree for matching nodes will be added.
+The `Machete.find` method finds all nodes in a Rubinius AST tree matching a pattern:
+
+    Machete.find('42 + 43 + 44'.to_ast, 'FixnumLiteral')
+    # => [
+    #      #<Rubinius::AST::FixnumLiteral:0x10b0 @value=44 @line=1>,
+    #      #<Rubinius::AST::FixnumLiteral:0x10b8 @value=43 @line=1>,
+    #      #<Rubinius::AST::FixnumLiteral:0x10c0 @value=42 @line=1>
+    #    ]
 
 Pattern Syntax
 --------------
