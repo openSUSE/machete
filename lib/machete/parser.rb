@@ -27,9 +27,6 @@ private
 
 SIMPLE_TOKENS = ["|", "<", ">", ",", "="]
 
-# FIXME: The patterns for VAR_NAME, CLASS_NAME, SYMBOL tokens are simpler than
-#        they should be. Implement them according to Ruby's parse.y (from
-#        1.8.7-p352).
 COMPLEX_TOKENS = [
   [:VAR_NAME,   /^[a-z_][a-zA-Z0-9_]*/],
   [:CLASS_NAME, /^[A-Z][a-zA-Z0-9_]*/],
