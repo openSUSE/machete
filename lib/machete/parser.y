@@ -1,6 +1,6 @@
 class Machete::Parser
 
-token VAR_NAME
+token METHOD_NAME
 token CLASS_NAME
 token SYMBOL
 token INTEGER
@@ -32,7 +32,7 @@ node : CLASS_NAME {
 attrs : attr
       | attrs "," attr { result = val[0].merge(val[2]) }
 
-attr : VAR_NAME "=" expression { result = { val[0].to_sym => val[2] } }
+attr : METHOD_NAME "=" expression { result = { val[0].to_sym => val[2] } }
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
         | INTEGER {
@@ -94,9 +94,9 @@ private
 SIMPLE_TOKENS = ["|", "<", ">", ",", "="]
 
 COMPLEX_TOKENS = [
-  [:VAR_NAME,   /^[a-z_][a-zA-Z0-9_]*/],
-  [:CLASS_NAME, /^[A-Z][a-zA-Z0-9_]*/],
-  [:SYMBOL,     /^:[a-zA-Z_][a-zA-Z0-9_]*/],
+  [:METHOD_NAME, /^[a-z_][a-zA-Z0-9_]*/],
+  [:CLASS_NAME,  /^[A-Z][a-zA-Z0-9_]*/],
+  [:SYMBOL,      /^:[a-zA-Z_][a-zA-Z0-9_]*/],
   [
     :INTEGER,
     /^

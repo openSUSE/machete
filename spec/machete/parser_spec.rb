@@ -72,8 +72,8 @@ module Machete
       '"abcd"'.should be_parsed_as(LiteralMatcher.new("abcd"))
     end
 
-    # Canonical VAR_NAME is "a".
-    it "parses VAR_NAME" do
+    # Canonical METHOD_NAME is "a".
+    it "parses METHOD_NAME" do
       'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
       'Foo<z = 42>'.should be_parsed_as(node_matcher_with_attr(:z))
       'Foo<_ = 42>'.should be_parsed_as(node_matcher_with_attr(:_))
