@@ -65,6 +65,14 @@ module Machete
       'Foo<a = 42 | 43>'.should be_parsed_as(NodeMatcher.new(:Foo, :a => @ch4243))
     end
 
+    # Canonical method_name is "a".
+    it "parses method_name" do
+      'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
+      'Foo< < = 42>'.should be_parsed_as(node_matcher_with_attr(:<))
+      'Foo<> = 42>'.should be_parsed_as(node_matcher_with_attr(:>))
+      'Foo<| = 42>'.should be_parsed_as(node_matcher_with_attr(:|))
+    end
+
     # Canonical literal is "42".
     it "parses literal" do
       ':a'.should be_parsed_as(LiteralMatcher.new(:a))
@@ -74,6 +82,7 @@ module Machete
 
     # Canonical METHOD_NAME is "a".
     it "parses METHOD_NAME" do
+      # Regular names
       'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
       'Foo<z = 42>'.should be_parsed_as(node_matcher_with_attr(:z))
       'Foo<_ = 42>'.should be_parsed_as(node_matcher_with_attr(:_))
@@ -85,6 +94,33 @@ module Machete
       'Foo<a9 = 42>'.should be_parsed_as(node_matcher_with_attr(:a9))
       'Foo<a_ = 42>'.should be_parsed_as(node_matcher_with_attr(:a_))
       'Foo<abcd = 42>'.should be_parsed_as(node_matcher_with_attr(:abcd))
+      'Foo<a? = 42>'.should be_parsed_as(node_matcher_with_attr(:a?))
+      'Foo<a! = 42>'.should be_parsed_as(node_matcher_with_attr(:a!))
+      'Foo<a= = 42>'.should be_parsed_as(node_matcher_with_attr(:a=))
+
+      # Operators (sorted alphabetically)
+      'Foo<% = 42>'.should be_parsed_as(node_matcher_with_attr(:%))
+      'Foo<& = 42>'.should be_parsed_as(node_matcher_with_attr(:&))
+      'Foo<* = 42>'.should be_parsed_as(node_matcher_with_attr(:*))
+      'Foo<** = 42>'.should be_parsed_as(node_matcher_with_attr(:**))
+      'Foo<+ = 42>'.should be_parsed_as(node_matcher_with_attr(:+))
+      'Foo<+@ = 42>'.should be_parsed_as(node_matcher_with_attr(:+@))
+      'Foo<- = 42>'.should be_parsed_as(node_matcher_with_attr(:-))
+      'Foo<-@ = 42>'.should be_parsed_as(node_matcher_with_attr(:-@))
+      'Foo</ = 42>'.should be_parsed_as(node_matcher_with_attr(:/))
+      'Foo< << = 42>'.should be_parsed_as(node_matcher_with_attr(:<<))
+      'Foo< <= = 42>'.should be_parsed_as(node_matcher_with_attr(:<=))
+      'Foo< <=> = 42>'.should be_parsed_as(node_matcher_with_attr(:<=>))
+      'Foo< == = 42>'.should be_parsed_as(node_matcher_with_attr(:==))
+      'Foo< === = 42>'.should be_parsed_as(node_matcher_with_attr(:===))
+      'Foo< =~ = 42>'.should be_parsed_as(node_matcher_with_attr(:=~))
+      'Foo<>= = 42>'.should be_parsed_as(node_matcher_with_attr(:>=))
+      'Foo<>> = 42>'.should be_parsed_as(node_matcher_with_attr(:>>))
+      'Foo<[] = 42>'.should be_parsed_as(node_matcher_with_attr(:[]))
+      'Foo<[]= = 42>'.should be_parsed_as(node_matcher_with_attr(:[]=))
+      'Foo<^ = 42>'.should be_parsed_as(node_matcher_with_attr(:^))
+      'Foo<` = 42>'.should be_parsed_as(node_matcher_with_attr(:`))
+      'Foo<~ = 42>'.should be_parsed_as(node_matcher_with_attr(:~))
     end
 
     # Canonical CLASS_NAME is "A".

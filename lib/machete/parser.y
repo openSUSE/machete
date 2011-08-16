@@ -32,7 +32,14 @@ node : CLASS_NAME {
 attrs : attr
       | attrs "," attr { result = val[0].merge(val[2]) }
 
-attr : METHOD_NAME "=" expression { result = { val[0].to_sym => val[2] } }
+attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
+
+# Hack to overcome the fact that "<", ">" and "|" will lex as simple tokens, not
+# METHOD_NAME tokens.
+method_name : METHOD_NAME
+            | "<"
+            | ">"
+            | "|"
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
         | INTEGER {
@@ -94,9 +101,8 @@ private
 SIMPLE_TOKENS = ["|", "<", ">", ",", "="]
 
 COMPLEX_TOKENS = [
-  [:METHOD_NAME, /^[a-z_][a-zA-Z0-9_]*/],
-  [:CLASS_NAME,  /^[A-Z][a-zA-Z0-9_]*/],
-  [:SYMBOL,      /^:[a-zA-Z_][a-zA-Z0-9_]*/],
+  # INTEGER needs to be before METHOD_NAME, otherwise e.g. "+1" would be
+  # recognized as two tokens.
   [
     :INTEGER,
     /^
@@ -144,7 +150,24 @@ COMPLEX_TOKENS = [
         "
       )
     /x
-  ]
+  ],
+  # We exclude "<", ">" and "|" from method names since they are lexed as simple
+  # tokens. This is because they have also other meanings in Machette patterns
+  # beside Ruby method names.
+  [
+    :METHOD_NAME,
+    /^
+      (
+        # regular name
+        [a-z_][a-zA-Z0-9_]*[?!=]?
+        |
+        # operator (sorted by length, then alphabetically)
+        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/^`~])
+      )
+    /x
+  ],
+  [:CLASS_NAME,  /^[A-Z][a-zA-Z0-9_]*/],
+  [:SYMBOL,      /^:[a-zA-Z_][a-zA-Z0-9_]*/]
 ]
 
 def next_token
@@ -152,17 +175,20 @@ def next_token
 
   return false if remaining_input.empty?
 
-  SIMPLE_TOKENS.each do |token|
-    if remaining_input[0...token.length] == token
-      @pos += token.length
-      return [token, token]
-    end
-  end
+  # Complex tokens need to be before simple tokens, otherwise e.g. "<<" would be
+  # recognized as two tokens.
 
   COMPLEX_TOKENS.each do |type, regexp|
     if remaining_input =~ regexp
       @pos += $&.length
       return [type, $&]
+    end
+  end
+
+  SIMPLE_TOKENS.each do |token|
+    if remaining_input[0...token.length] == token
+      @pos += token.length
+      return [token, token]
     end
   end
 
