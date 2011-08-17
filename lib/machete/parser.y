@@ -167,7 +167,22 @@ COMPLEX_TOKENS = [
     /x
   ],
   [:CLASS_NAME,  /^[A-Z][a-zA-Z0-9_]*/],
-  [:SYMBOL,      /^:[a-zA-Z_][a-zA-Z0-9_]*/]
+  [
+    :SYMBOL,
+    /^
+      :
+      (
+        # class name
+        [A-Z][a-zA-Z0-9_]*
+        |
+        # regular method name
+        [a-z_][a-zA-Z0-9_]*[?!=]?
+        |
+        # operator (sorted by length, then alphabetically)
+        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/<>^`|~])
+      )
+    /x
+  ]
 ]
 
 def next_token

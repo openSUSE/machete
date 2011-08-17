@@ -139,10 +139,21 @@ module Machete
 
     # Canonical SYMBOL is ":a".
     it "parses SYMBOL" do
-      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
-      ':z'.should be_parsed_as(LiteralMatcher.new(:z))
+      # Class names
       ':A'.should be_parsed_as(LiteralMatcher.new(:A))
       ':Z'.should be_parsed_as(LiteralMatcher.new(:Z))
+      ':Aa'.should be_parsed_as(LiteralMatcher.new(:Aa))
+      ':Az'.should be_parsed_as(LiteralMatcher.new(:Az))
+      ':AA'.should be_parsed_as(LiteralMatcher.new(:AA))
+      ':AZ'.should be_parsed_as(LiteralMatcher.new(:AZ))
+      ':A0'.should be_parsed_as(LiteralMatcher.new(:A0))
+      ':A9'.should be_parsed_as(LiteralMatcher.new(:A9))
+      ':A_'.should be_parsed_as(LiteralMatcher.new(:A_))
+      ':Abcd'.should be_parsed_as(LiteralMatcher.new(:Abcd))
+
+      # Regular method names
+      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
+      ':z'.should be_parsed_as(LiteralMatcher.new(:z))
       ':_'.should be_parsed_as(LiteralMatcher.new(:_))
       ':aa'.should be_parsed_as(LiteralMatcher.new(:aa))
       ':az'.should be_parsed_as(LiteralMatcher.new(:az))
@@ -152,6 +163,36 @@ module Machete
       ':a9'.should be_parsed_as(LiteralMatcher.new(:a9))
       ':a_'.should be_parsed_as(LiteralMatcher.new(:a_))
       ':abcd'.should be_parsed_as(LiteralMatcher.new(:abcd))
+      ':a?'.should be_parsed_as(LiteralMatcher.new(:a?))
+      ':a!'.should be_parsed_as(LiteralMatcher.new(:a!))
+      ':a='.should be_parsed_as(LiteralMatcher.new(:a=))
+
+      # Operators (sorted alphabetically)
+      ':%'.should be_parsed_as(LiteralMatcher.new(:%))
+      ':&'.should be_parsed_as(LiteralMatcher.new(:&))
+      ':*'.should be_parsed_as(LiteralMatcher.new(:*))
+      ':**'.should be_parsed_as(LiteralMatcher.new(:**))
+      ':+'.should be_parsed_as(LiteralMatcher.new(:+))
+      ':+@'.should be_parsed_as(LiteralMatcher.new(:+@))
+      ':-'.should be_parsed_as(LiteralMatcher.new(:-))
+      ':-@'.should be_parsed_as(LiteralMatcher.new(:-@))
+      ':/'.should be_parsed_as(LiteralMatcher.new(:/))
+      ':<'.should be_parsed_as(LiteralMatcher.new(:<))
+      ':<<'.should be_parsed_as(LiteralMatcher.new(:<<))
+      ':<='.should be_parsed_as(LiteralMatcher.new(:<=))
+      ':<=>'.should be_parsed_as(LiteralMatcher.new(:<=>))
+      ':=='.should be_parsed_as(LiteralMatcher.new(:==))
+      ':==='.should be_parsed_as(LiteralMatcher.new(:===))
+      ':=~'.should be_parsed_as(LiteralMatcher.new(:=~))
+      ':>'.should be_parsed_as(LiteralMatcher.new(:>))
+      ':>='.should be_parsed_as(LiteralMatcher.new(:>=))
+      ':>>'.should be_parsed_as(LiteralMatcher.new(:>>))
+      ':[]'.should be_parsed_as(LiteralMatcher.new(:[]))
+      ':[]='.should be_parsed_as(LiteralMatcher.new(:[]=))
+      ':^'.should be_parsed_as(LiteralMatcher.new(:^))
+      ':`'.should be_parsed_as(LiteralMatcher.new(:`))
+      ':|'.should be_parsed_as(LiteralMatcher.new(:|))
+      ':~'.should be_parsed_as(LiteralMatcher.new(:~))
     end
 
     # Canonical INTEGER is "42".
