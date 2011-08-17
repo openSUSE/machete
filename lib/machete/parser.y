@@ -211,7 +211,7 @@ def next_token
 end
 
 def skip_whitespace
-  if remaining_input =~ /^[ \t\r\n]+/
+  if remaining_input =~ /\A^[ \t\r\n]+/
     @pos += $&.length
   end
 end

@@ -328,6 +328,12 @@ module Machete
       '42   '.should be_parsed_as(@i42)
     end
 
+    it "whitespace skipping starts from the beginning of the input, not beginning of the line" do
+      # This basically verifies that the whitespace-skipping regexp has "\A" at
+      # the beginning, not "^".
+      "42\n ".should be_parsed_as(@i42)
+    end
+
     it "handles lexical errors" do
       '@#%'.should not_be_parsed("Unexpected character: \"@\".")
     end
