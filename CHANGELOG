@@ -1,0 +1,10 @@
+0.2.0 (2011-08-17)
+------------------
+
+* Extended method name grammar to cover more Ruby method names.
+* Extended symbol grammar to cover more Ruby symbols.
+
+0.1.0 (2011-07-27)
+------------------
+
+* Initial release.
