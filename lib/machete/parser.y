@@ -21,6 +21,7 @@ expression : primary
              }
 
 primary : node
+        | array
         | literal
         | any
 
@@ -54,6 +55,14 @@ method_name : METHOD_NAME
             | ">"
             | "^"
             | "|"
+
+array : "[" items_opt "]" { result = ArrayMatcher.new(val[1]) }
+
+items_opt : /* empty */ { result = [] }
+          | items
+
+items : expression           { result = [val[0]] }
+      | items "," expression { result = val[0] << val[2] }
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
         | INTEGER {
@@ -117,7 +126,7 @@ end
 
 # "^" needs to be here because if it were among operators recognized by
 # METHOD_NAME, "^=" would be recognized as two token.
-SIMPLE_TOKENS = ["|", "<", ">", ",", "=", "^=", "^", "$="]
+SIMPLE_TOKENS = ["|", "<", ">", ",", "=", "^=", "^", "$=", "[", "]"]
 
 COMPLEX_TOKENS = [
   # INTEGER needs to be before METHOD_NAME, otherwise e.g. "+1" would be

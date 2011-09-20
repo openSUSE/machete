@@ -22,12 +22,16 @@ module Machete
       @i42 = LiteralMatcher.new(42)
       @i43 = LiteralMatcher.new(43)
       @i44 = LiteralMatcher.new(44)
+      @i45 = LiteralMatcher.new(45)
 
       @foo = NodeMatcher.new(:Foo)
       @foo_a = NodeMatcher.new(:Foo, :a => @i42)
       @foo_ab = NodeMatcher.new(:Foo, :a => @i42, :b => @i43)
 
+      @a4243 = ArrayMatcher.new([@i42, @i43])
+
       @ch4243 = ChoiceMatcher.new([@i42, @i43])
+      @ch4445 = ChoiceMatcher.new([@i44, @i45])
       @ch424344 = ChoiceMatcher.new([@i42, @i43, @i44])
     end
 
@@ -45,7 +49,8 @@ module Machete
     # Canonical primary is "42".
     it "parses primary" do
       'Foo<a = 42>'.should be_parsed_as(@foo_a)
-      '42'.should be_parsed_as(@i42)
+      'Foo<a = 42>'.should be_parsed_as(@foo_a)
+      '[42, 43]'.should be_parsed_as(@a4243)
       'any'.should be_parsed_as(AnyMatcher.new)
     end
 
@@ -80,6 +85,25 @@ module Machete
       'Foo<> = 42>'.should be_parsed_as(node_matcher_with_attr(:>))
       'Foo<^ = 42>'.should be_parsed_as(node_matcher_with_attr(:^))
       'Foo<| = 42>'.should be_parsed_as(node_matcher_with_attr(:|))
+    end
+
+    # Canonical array is "[42, 43]".
+    it "parses array" do
+      '[42, 43]'.should be_parsed_as(@a4243)
+    end
+
+    # Canonical items_opt is "42, 43".
+    it "parses items" do
+      '[ ]'.should be_parsed_as(ArrayMatcher.new([]))
+      '[42, 43]'.should be_parsed_as(@a4243)
+    end
+
+    # Canonical items is "42, 43".
+    it "parses items" do
+      '[42 | 43]'.should be_parsed_as(ArrayMatcher.new([@ch4243]))
+      '[42 | 43, 44 | 45]'.should be_parsed_as(
+        ArrayMatcher.new([@ch4243, @ch4445])
+      )
     end
 
     # Canonical literal is "42".

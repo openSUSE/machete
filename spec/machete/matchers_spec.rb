@@ -137,6 +137,71 @@ module Machete::Matchers
     end
   end
 
+  describe ArrayMatcher do
+    before :each do
+      @items = [
+        LiteralMatcher.new(42),
+        LiteralMatcher.new(43),
+        LiteralMatcher.new(44)
+      ]
+      @matcher = ArrayMatcher.new(@items)
+    end
+
+    describe "initialize" do
+      it "sets attributes correctly" do
+        @matcher.items.should == @items
+      end
+    end
+
+    describe "==" do
+      it "returns true when passed the same object" do
+        @matcher.should == @matcher
+      end
+
+      it "returns true when passed a ArrayMatcher initialized with the same parameters" do
+        @matcher.should == ArrayMatcher.new(@items)
+      end
+
+      it "returns false when passed some random object" do
+        @matcher.should_not == Object.new
+      end
+
+      it "returns false when passed a subclass of ArrayMatcher initialized with the same parameters" do
+        class SubclassedArrayMatcher < ArrayMatcher
+        end
+
+        @matcher.should_not == SubclassedArrayMatcher.new(@items)
+      end
+
+      it "returns false when passed a ArrayMatcher initialized with different parameters" do
+        @matcher.should_not == ArrayMatcher.new([
+          LiteralMatcher.new(45),
+          LiteralMatcher.new(46),
+          LiteralMatcher.new(47)
+        ])
+      end
+    end
+
+    describe "matches?" do
+      it "matches an array with matching items" do
+        @matcher.matches?([42, 43, 44]).should be_true
+      end
+
+      it "does not match an array with non-matching items" do
+        @matcher.matches?([45, 46, 47]).should be_false
+      end
+
+      it "does not match an array with different length" do
+        @matcher.matches?([42, 43]).should be_false
+        @matcher.matches?([42, 43, 44, 45]).should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
   describe LiteralMatcher do
     before :each do
       @matcher = LiteralMatcher.new(42)

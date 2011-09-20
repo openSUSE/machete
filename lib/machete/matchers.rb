@@ -39,6 +39,25 @@ module Machete
     end
 
     # @private
+    class ArrayMatcher
+      attr_reader :items
+
+      def initialize(items)
+        @items = items
+      end
+
+      def ==(other)
+        other.instance_of?(self.class) && @items == other.items
+      end
+
+      def matches?(node)
+        node.is_a?(Array) &&
+          @items.size == node.size &&
+          @items.zip(node).all? { |matcher, item| matcher.matches?(item) }
+      end
+    end
+
+    # @private
     class LiteralMatcher
       attr_reader :literal
 
