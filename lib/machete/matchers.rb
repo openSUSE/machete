@@ -54,5 +54,16 @@ module Machete
         @literal == node
       end
     end
+
+    # @private
+    class AnyMatcher
+      def ==(other)
+        other.instance_of?(self.class)
+      end
+
+      def matches?(node)
+        true
+      end
+    end
   end
 end

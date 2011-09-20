@@ -46,6 +46,7 @@ module Machete
     it "parses primary" do
       'Foo<a = 42>'.should be_parsed_as(@foo_a)
       '42'.should be_parsed_as(@i42)
+      'any'.should be_parsed_as(AnyMatcher.new)
     end
 
     # Canonical node is "Foo".
@@ -68,6 +69,7 @@ module Machete
     # Canonical method_name is "a".
     it "parses method_name" do
       'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
+      'Foo<any = 42>'.should be_parsed_as(node_matcher_with_attr(:any))
       'Foo< < = 42>'.should be_parsed_as(node_matcher_with_attr(:<))
       'Foo<> = 42>'.should be_parsed_as(node_matcher_with_attr(:>))
       'Foo<| = 42>'.should be_parsed_as(node_matcher_with_attr(:|))
@@ -78,6 +80,11 @@ module Machete
       ':a'.should be_parsed_as(LiteralMatcher.new(:a))
       '42'.should be_parsed_as(@i42)
       '"abcd"'.should be_parsed_as(LiteralMatcher.new("abcd"))
+    end
+
+    # Canonical any is "any".
+    it "parses any" do
+      'any'.should be_parsed_as(AnyMatcher.new)
     end
 
     # Canonical METHOD_NAME is "a".
@@ -308,6 +315,11 @@ module Machete
       '"\\xF"'.should be_parsed_as(LiteralMatcher.new("\xF"))
       '"\\x12"'.should be_parsed_as(LiteralMatcher.new("\x12"))
       '"abc"'.should be_parsed_as(LiteralMatcher.new("abc"))
+    end
+
+    # Canonical ANY is "any".
+    it "parses ANY" do
+      'any'.should be_parsed_as(AnyMatcher.new)
     end
 
     it "skips whitespace before tokens" do

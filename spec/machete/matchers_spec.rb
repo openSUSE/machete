@@ -183,4 +183,33 @@ module Machete::Matchers
       end
     end
   end
+
+  describe AnyMatcher do
+    before :each do
+      @matcher = AnyMatcher.new
+    end
+
+    describe "==" do
+      it "returns true when passed the same object" do
+        @matcher.should == @matcher
+      end
+
+      it "returns false when passed some random object" do
+        @matcher.should_not == Object.new
+      end
+
+      it "returns false when passed a subclass of AnyMatcher" do
+        class SubclassedAnyMatcher < AnyMatcher
+        end
+
+        @matcher.should_not == SubclassedAnyMatcher.new
+      end
+    end
+
+    describe "matches?" do
+      it "matches any object" do
+        @matcher.matches?(Object.new)
+      end
+    end
+  end
 end

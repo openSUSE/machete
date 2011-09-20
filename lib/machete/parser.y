@@ -5,6 +5,7 @@ token CLASS_NAME
 token SYMBOL
 token INTEGER
 token STRING
+token ANY
 
 start expression
 
@@ -21,6 +22,7 @@ expression : primary
 
 primary : node
         | literal
+        | any
 
 node : CLASS_NAME {
          result = NodeMatcher.new(val[0].to_sym)
@@ -35,8 +37,9 @@ attrs : attr
 attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
 
 # Hack to overcome the fact that "<", ">" and "|" will lex as simple tokens, not
-# METHOD_NAME tokens.
+# METHOD_NAME tokens, and that "any" will lex as ANY token.
 method_name : METHOD_NAME
+            | ANY
             | "<"
             | ">"
             | "|"
@@ -82,6 +85,8 @@ literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
             end
             result = LiteralMatcher.new(value)
           }
+
+any : ANY { result = AnyMatcher.new }
 
 ---- inner
 
@@ -151,6 +156,9 @@ COMPLEX_TOKENS = [
       )
     /x
   ],
+  # ANY needs to be before METHOD_NAME, otherwise "any" would be recognized as a
+  # method name.
+  [:ANY, /^any/],
   # We exclude "<", ">" and "|" from method names since they are lexed as simple
   # tokens. This is because they have also other meanings in Machette patterns
   # beside Ruby method names.
