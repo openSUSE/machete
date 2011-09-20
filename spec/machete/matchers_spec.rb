@@ -184,6 +184,108 @@ module Machete::Matchers
     end
   end
 
+  describe StartsWithMatcher do
+    before :each do
+      @matcher = StartsWithMatcher.new("abcd")
+    end
+
+    describe "initialize" do
+      it "sets attributes correctly" do
+        @matcher.prefix.should == "abcd"
+      end
+    end
+
+    describe "==" do
+      it "returns true when passed the same object" do
+        @matcher.should == @matcher
+      end
+
+      it "returns true when passed a StartsWithMatcher initialized with the same parameters" do
+        @matcher.should == StartsWithMatcher.new("abcd")
+      end
+
+      it "returns false when passed some random object" do
+        @matcher.should_not == Object.new
+      end
+
+      it "returns false when passed a subclass of StartsWithMatcher initialized with the same parameters" do
+        class SubclassedStartsWithMatcher < StartsWithMatcher
+        end
+
+        @matcher.should_not == SubclassedStartsWithMatcher.new("abcd")
+      end
+
+      it "returns false when passed a StartsWithMatcher initialized with different parameters" do
+        @matcher.should_not == StartsWithMatcher.new("efgh")
+      end
+    end
+
+    describe "matches?" do
+      it "matches a string starting with the prefix" do
+        @matcher.matches?("abcdefgh").should be_true
+      end
+
+      it "does not match a string not starting with the prefix" do
+        @matcher.matches?("efghijkl").should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
+  describe EndsWithMatcher do
+    before :each do
+      @matcher = EndsWithMatcher.new("abcd")
+    end
+
+    describe "initialize" do
+      it "sets attributes correctly" do
+        @matcher.suffix.should == "abcd"
+      end
+    end
+
+    describe "==" do
+      it "returns true when passed the same object" do
+        @matcher.should == @matcher
+      end
+
+      it "returns true when passed a EndsWithMatcher initialized with the same parameters" do
+        @matcher.should == EndsWithMatcher.new("abcd")
+      end
+
+      it "returns false when passed some random object" do
+        @matcher.should_not == Object.new
+      end
+
+      it "returns false when passed a subclass of EndsWithMatcher initialized with the same parameters" do
+        class SubclassedEndsWithMatcher < EndsWithMatcher
+        end
+
+        @matcher.should_not == SubclassedEndsWithMatcher.new("abcd")
+      end
+
+      it "returns false when passed a EndsWithMatcher initialized with different parameters" do
+        @matcher.should_not == EndsWithMatcher.new("efgh")
+      end
+    end
+
+    describe "matches?" do
+      it "matches a string ending with the suffix" do
+        @matcher.matches?("efghabcd").should be_true
+      end
+
+      it "does not match a string not ending with the suffix" do
+        @matcher.matches?("ijklefgh").should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
   describe AnyMatcher do
     before :each do
       @matcher = AnyMatcher.new

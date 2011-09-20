@@ -64,6 +64,12 @@ module Machete
     # Canonical attr is "a = 42".
     it "parses attr" do
       'Foo<a = 42 | 43>'.should be_parsed_as(NodeMatcher.new(:Foo, :a => @ch4243))
+      'Foo<a ^= "abcd">'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => StartsWithMatcher.new("abcd"))
+      )
+      'Foo<a $= "abcd">'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => EndsWithMatcher.new("abcd"))
+      )
     end
 
     # Canonical method_name is "a".
@@ -72,6 +78,7 @@ module Machete
       'Foo<any = 42>'.should be_parsed_as(node_matcher_with_attr(:any))
       'Foo< < = 42>'.should be_parsed_as(node_matcher_with_attr(:<))
       'Foo<> = 42>'.should be_parsed_as(node_matcher_with_attr(:>))
+      'Foo<^ = 42>'.should be_parsed_as(node_matcher_with_attr(:^))
       'Foo<| = 42>'.should be_parsed_as(node_matcher_with_attr(:|))
     end
 
@@ -125,7 +132,6 @@ module Machete
       'Foo<>> = 42>'.should be_parsed_as(node_matcher_with_attr(:>>))
       'Foo<[] = 42>'.should be_parsed_as(node_matcher_with_attr(:[]))
       'Foo<[]= = 42>'.should be_parsed_as(node_matcher_with_attr(:[]=))
-      'Foo<^ = 42>'.should be_parsed_as(node_matcher_with_attr(:^))
       'Foo<` = 42>'.should be_parsed_as(node_matcher_with_attr(:`))
       'Foo<~ = 42>'.should be_parsed_as(node_matcher_with_attr(:~))
     end

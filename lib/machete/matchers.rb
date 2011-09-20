@@ -56,6 +56,40 @@ module Machete
     end
 
     # @private
+    class StartsWithMatcher
+      attr_reader :prefix
+
+      def initialize(prefix)
+        @prefix = prefix
+      end
+
+      def ==(other)
+        other.instance_of?(self.class) && @prefix == other.prefix
+      end
+
+      def matches?(node)
+        node.is_a?(String) && node.start_with?(@prefix)
+      end
+    end
+
+    # @private
+    class EndsWithMatcher
+      attr_reader :suffix
+
+      def initialize(suffix)
+        @suffix = suffix
+      end
+
+      def ==(other)
+        other.instance_of?(self.class) && @suffix == other.suffix
+      end
+
+      def matches?(node)
+        node.is_a?(String) && node.end_with?(@suffix)
+      end
+    end
+
+    # @private
     class AnyMatcher
       def ==(other)
         other.instance_of?(self.class)

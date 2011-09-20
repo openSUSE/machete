@@ -35,13 +35,24 @@ attrs : attr
       | attrs "," attr { result = val[0].merge(val[2]) }
 
 attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
+     | method_name "^=" STRING {
+         result = {
+           val[0].to_sym => StartsWithMatcher.new(string_value(val[2]))
+         }
+       }
+     | method_name "$=" STRING {
+         result = {
+           val[0].to_sym => EndsWithMatcher.new(string_value(val[2]))
+         }
+       }
 
-# Hack to overcome the fact that "<", ">" and "|" will lex as simple tokens, not
-# METHOD_NAME tokens, and that "any" will lex as ANY token.
+# Hack to overcome the fact that "<", ">", "^" and "|" will lex as simple
+# tokens, not METHOD_NAME tokens, and that "any" will lex as ANY token.
 method_name : METHOD_NAME
             | ANY
             | "<"
             | ">"
+            | "^"
             | "|"
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
@@ -61,30 +72,7 @@ literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
             end
             result = LiteralMatcher.new(value)
           }
-        | STRING {
-            quote = val[0][0..0]
-            value = if quote == "'"
-              val[0][1..-2].gsub("\\\\", "\\").gsub("\\'", "'")
-            elsif quote == '"'
-              val[0][1..-2].
-                gsub("\\\\", "\\").
-                gsub('\\"', '"').
-                gsub("\\n", "\n").
-                gsub("\\t", "\t").
-                gsub("\\r", "\r").
-                gsub("\\f", "\f").
-                gsub("\\v", "\v").
-                gsub("\\a", "\a").
-                gsub("\\e", "\e").
-                gsub("\\b", "\b").
-                gsub("\\s", "\s").
-                gsub(/\\([0-7]{1,3})/) { $1.to_i(8).chr }.
-                gsub(/\\x([0-9a-fA-F]{1,2})/) { $1.to_i(16).chr }
-            else
-              raise "Unknown quote: #{quote.inspect}."
-            end
-            result = LiteralMatcher.new(value)
-          }
+        | STRING { result = LiteralMatcher.new(string_value(val[0])) }
 
 any : ANY { result = AnyMatcher.new }
 
@@ -103,7 +91,33 @@ end
 
 private
 
-SIMPLE_TOKENS = ["|", "<", ">", ",", "="]
+def string_value(value)
+  quote = value[0..0]
+  if quote == "'"
+    value[1..-2].gsub("\\\\", "\\").gsub("\\'", "'")
+  elsif quote == '"'
+    value[1..-2].
+      gsub("\\\\", "\\").
+      gsub('\\"', '"').
+      gsub("\\n", "\n").
+      gsub("\\t", "\t").
+      gsub("\\r", "\r").
+      gsub("\\f", "\f").
+      gsub("\\v", "\v").
+      gsub("\\a", "\a").
+      gsub("\\e", "\e").
+      gsub("\\b", "\b").
+      gsub("\\s", "\s").
+      gsub(/\\([0-7]{1,3})/) { $1.to_i(8).chr }.
+      gsub(/\\x([0-9a-fA-F]{1,2})/) { $1.to_i(16).chr }
+  else
+    raise "Unknown quote: #{quote.inspect}."
+  end
+end
+
+# "^" needs to be here because if it were among operators recognized by
+# METHOD_NAME, "^=" would be recognized as two token.
+SIMPLE_TOKENS = ["|", "<", ">", ",", "=", "^=", "^", "$="]
 
 COMPLEX_TOKENS = [
   # INTEGER needs to be before METHOD_NAME, otherwise e.g. "+1" would be
@@ -159,9 +173,9 @@ COMPLEX_TOKENS = [
   # ANY needs to be before METHOD_NAME, otherwise "any" would be recognized as a
   # method name.
   [:ANY, /^any/],
-  # We exclude "<", ">" and "|" from method names since they are lexed as simple
-  # tokens. This is because they have also other meanings in Machette patterns
-  # beside Ruby method names.
+  # We exclude "<", ">", "^" and "|" from method names since they are lexed as
+  # simple tokens. This is because they have also other meanings in Machette
+  # patterns beside Ruby method names.
   [
     :METHOD_NAME,
     /^
@@ -170,7 +184,7 @@ COMPLEX_TOKENS = [
         [a-z_][a-zA-Z0-9_]*[?!=]?
         |
         # operator (sorted by length, then alphabetically)
-        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/^`~])
+        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/`~])
       )
     /x
   ],
