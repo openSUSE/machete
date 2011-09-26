@@ -1,6 +1,48 @@
 require "spec_helper"
 
 module Machete::Matchers
+  describe Quantifier do
+    before :each do
+      @quantifier = Quantifier.new(LiteralMatcher.new(42), 0, 100)
+    end
+
+    describe "initialize" do
+      it "sets attributes correctly" do
+        @quantifier.matcher.should == LiteralMatcher.new(42)
+        @quantifier.min.should == 0
+        @quantifier.max.should == 100
+      end
+    end
+
+    describe "==" do
+      it "returns true when passed the same object" do
+        @quantifier.should == @quantifier
+      end
+
+      it "returns true when passed a Quantifier initialized with the same parameters" do
+        @quantifier.should == Quantifier.new(LiteralMatcher.new(42), 0, 100)
+      end
+
+      it "returns false when passed some random object" do
+        @quantifier.should_not == Object.new
+      end
+
+      it "returns false when passed a subclass of Quantifier initialized with the same parameters" do
+        class SubclassedQuantifier < Quantifier
+        end
+
+        @quantifier.should_not ==
+          SubclassedQuantifier.new(LiteralMatcher.new(42), 0, 100)
+      end
+
+      it "returns false when passed a Quantifier initialized with different parameters" do
+        @quantifier.should_not == Quantifier.new(LiteralMatcher.new(43), 0, 100)
+        @quantifier.should_not == Quantifier.new(LiteralMatcher.new(42), 1, 100)
+        @quantifier.should_not == Quantifier.new(LiteralMatcher.new(42), 0, 101)
+      end
+    end
+  end
+
   describe ChoiceMatcher do
     before :each do
       @alternatives = [
@@ -183,17 +225,98 @@ module Machete::Matchers
     end
 
     describe "matches?" do
-      it "matches an array with matching items" do
-        @matcher.matches?([42, 43, 44]).should be_true
+      it "works on matcher with no items" do
+        matcher = ArrayMatcher.new([])
+
+        matcher.matches?([]).should be_true
+        matcher.matches?([42]).should be_false
       end
 
-      it "does not match an array with non-matching items" do
-        @matcher.matches?([45, 46, 47]).should be_false
+      it "works on matcher with one item" do
+        matcher = ArrayMatcher.new([LiteralMatcher.new(42)])
+
+        matcher.matches?([]).should be_false
+        matcher.matches?([42]).should be_true
+        matcher.matches?([43]).should be_false
+        matcher.matches?([42, 43]).should be_false
       end
 
-      it "does not match an array with different length" do
-        @matcher.matches?([42, 43]).should be_false
-        @matcher.matches?([42, 43, 44, 45]).should be_false
+      it "works on matcher with many items" do
+        matcher = ArrayMatcher.new([
+          LiteralMatcher.new(42),
+          LiteralMatcher.new(43),
+          LiteralMatcher.new(44)
+        ])
+
+        matcher.matches?([42, 43]).should be_false
+        matcher.matches?([42, 43, 44]).should be_true
+        matcher.matches?([43, 43, 44]).should be_false
+        matcher.matches?([42, 44, 44]).should be_false
+        matcher.matches?([42, 43, 45]).should be_false
+        matcher.matches?([42, 43, 44, 45]).should be_false
+      end
+
+      it "works on matcher with a bound quantifier" do
+        matcher = ArrayMatcher.new([
+          Quantifier.new(LiteralMatcher.new(42), 1, 2)
+        ])
+
+        matcher.matches?([]).should be_false
+        matcher.matches?([42]).should be_true
+        matcher.matches?([43]).should be_false
+        matcher.matches?([42, 42]).should be_true
+        matcher.matches?([43, 42]).should be_false
+        matcher.matches?([42, 43]).should be_false
+        matcher.matches?([42, 42, 42]).should be_false
+      end
+
+      it "works on matcher with a bound quantifier and some items" do
+        matcher = ArrayMatcher.new([
+          LiteralMatcher.new(42),
+          Quantifier.new(LiteralMatcher.new(43), 0, 1),
+          LiteralMatcher.new(44)
+        ])
+
+        matcher.matches?([42, 44]).should be_true
+        matcher.matches?([42, 43, 44]).should be_true
+        matcher.matches?([42, 44, 44]).should be_false
+        matcher.matches?([42, 43, 43, 44]).should be_false
+      end
+
+      it "works on matcher with an unbound quantifier" do
+        matcher = ArrayMatcher.new([
+          Quantifier.new(LiteralMatcher.new(42), 1, nil)
+        ])
+
+        matcher.matches?([]).should be_false
+        matcher.matches?([42]).should be_true
+        matcher.matches?([43]).should be_false
+        matcher.matches?([42, 42]).should be_true
+        matcher.matches?([43, 42]).should be_false
+        matcher.matches?([42, 43]).should be_false
+        matcher.matches?([42, 42, 42]).should be_true
+        matcher.matches?([43, 42, 42]).should be_false
+        matcher.matches?([42, 43, 42]).should be_false
+        matcher.matches?([42, 42, 43]).should be_false
+      end
+
+      it "works on matcher with an unbound quantifier and some items" do
+        matcher = ArrayMatcher.new([
+          LiteralMatcher.new(42),
+          Quantifier.new(LiteralMatcher.new(43), 0, nil),
+          LiteralMatcher.new(44)
+        ])
+
+        matcher.matches?([42, 44]).should be_true
+        matcher.matches?([42, 43, 44]).should be_true
+        matcher.matches?([42, 44, 44]).should be_false
+        matcher.matches?([42, 43, 43, 44]).should be_true
+        matcher.matches?([42, 44, 43, 44]).should be_false
+        matcher.matches?([42, 43, 44, 44]).should be_false
+        matcher.matches?([42, 43, 43, 43, 44]).should be_true
+        matcher.matches?([42, 44, 43, 43, 44]).should be_false
+        matcher.matches?([42, 43, 44, 43, 44]).should be_false
+        matcher.matches?([42, 43, 43, 44, 44]).should be_false
       end
 
       it "does not match some random object" do

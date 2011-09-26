@@ -47,10 +47,12 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
          }
        }
 
-# Hack to overcome the fact that "<", ">", "^" and "|" will lex as simple
-# tokens, not METHOD_NAME tokens, and that "any" will lex as ANY token.
+# Hack to overcome the fact that some tokens will lex as simple tokens, not
+# METHOD_NAME tokens, and that "any" will lex as ANY token.
 method_name : METHOD_NAME
             | ANY
+            | "*"
+            | "+"
             | "<"
             | ">"
             | "^"
@@ -61,27 +63,31 @@ array : "[" items_opt "]" { result = ArrayMatcher.new(val[1]) }
 items_opt : /* empty */ { result = [] }
           | items
 
-items : expression           { result = [val[0]] }
-      | items "," expression { result = val[0] << val[2] }
+items : item           { result = [val[0]] }
+      | items "," item { result = val[0] << val[2] }
+
+item : expression
+     | expression quantifier { result = Quantifier.new(val[0], *val[1]) }
+
+quantifier : "*" { result = [0, nil] }
+           | "+" { result = [1, nil] }
+           | "?" { result = [0, 1] }
+           | "{" INTEGER "}" {
+             result = [integer_value(val[1]), integer_value(val[1])]
+           }
+           | "{" INTEGER "," "}" {
+             result = [integer_value(val[1]), nil]
+           }
+           | "{" "," INTEGER "}" {
+             result = [0, integer_value(val[2])]
+           }
+           | "{" INTEGER "," INTEGER "}" {
+             result = [integer_value(val[1]), integer_value(val[3])]
+           }
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
-        | INTEGER {
-            value = if val[0] =~ /^0[bB]/
-              val[0][2..-1].to_i(2)
-            elsif val[0] =~ /^0[oO]/
-              val[0][2..-1].to_i(8)
-            elsif val[0] =~ /^0[dD]/
-              val[0][2..-1].to_i(10)
-            elsif val[0] =~ /^0[xX]/
-              val[0][2..-1].to_i(16)
-            elsif val[0] =~ /^0/
-              val[0][1..-1].to_i(8)
-            else
-              val[0].to_i
-            end
-            result = LiteralMatcher.new(value)
-          }
-        | STRING { result = LiteralMatcher.new(string_value(val[0])) }
+        | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
+        | STRING  { result = LiteralMatcher.new(string_value(val[0])) }
 
 any : ANY { result = AnyMatcher.new }
 
@@ -99,6 +105,22 @@ def parse(input)
 end
 
 private
+
+def integer_value(value)
+  if value =~ /^0[bB]/
+    value[2..-1].to_i(2)
+  elsif value =~ /^0[oO]/
+    value[2..-1].to_i(8)
+  elsif value =~ /^0[dD]/
+    value[2..-1].to_i(10)
+  elsif value =~ /^0[xX]/
+    value[2..-1].to_i(16)
+  elsif value =~ /^0/
+    value[1..-1].to_i(8)
+  else
+    value.to_i
+  end
+end
 
 def string_value(value)
   quote = value[0..0]
@@ -126,7 +148,23 @@ end
 
 # "^" needs to be here because if it were among operators recognized by
 # METHOD_NAME, "^=" would be recognized as two token.
-SIMPLE_TOKENS = ["|", "<", ">", ",", "=", "^=", "^", "$=", "[", "]"]
+SIMPLE_TOKENS = [
+  "|",
+  "<",
+  ">",
+  ",",
+  "=",
+  "^=",
+  "^",
+  "$=",
+  "[",
+  "]",
+  "*",
+  "+",
+  "?",
+  "{",
+  "}"
+]
 
 COMPLEX_TOKENS = [
   # INTEGER needs to be before METHOD_NAME, otherwise e.g. "+1" would be
@@ -182,9 +220,9 @@ COMPLEX_TOKENS = [
   # ANY needs to be before METHOD_NAME, otherwise "any" would be recognized as a
   # method name.
   [:ANY, /^any/],
-  # We exclude "<", ">", "^" and "|" from method names since they are lexed as
-  # simple tokens. This is because they have also other meanings in Machette
-  # patterns beside Ruby method names.
+  # We exclude "*", "+", "<", ">", "^" and "|" from method names since they are
+  # lexed as simple tokens. This is because they have also other meanings in
+  # Machette patterns beside Ruby method names.
   [
     :METHOD_NAME,
     /^
@@ -193,7 +231,7 @@ COMPLEX_TOKENS = [
         [a-z_][a-zA-Z0-9_]*[?!=]?
         |
         # operator (sorted by length, then alphabetically)
-        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/`~])
+        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&\-\/`~])
       )
     /x
   ],

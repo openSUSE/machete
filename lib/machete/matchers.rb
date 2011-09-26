@@ -2,6 +2,23 @@ module Machete
   # @private
   module Matchers
     # @private
+    class Quantifier
+      # :min should be always set, :max can be nil (meaning infinity)
+      attr_reader :matcher, :min, :max
+
+      def initialize(matcher, min, max)
+        @matcher, @min, @max = matcher, min, max
+      end
+
+      def ==(other)
+        other.instance_of?(self.class) &&
+          @matcher == other.matcher &&
+          @min == other.min &&
+          @max == other.max
+      end
+    end
+
+    # @private
     class ChoiceMatcher
       attr_reader :alternatives
 
@@ -51,9 +68,48 @@ module Machete
       end
 
       def matches?(node)
-        node.is_a?(Array) &&
-          @items.size == node.size &&
-          @items.zip(node).all? { |matcher, item| matcher.matches?(item) }
+        return false unless node.is_a?(Array)
+
+        match(@items, node)
+      end
+
+      private
+
+      # Simple recursive algorithm based on the one for regexp matching
+      # described in Beatiful Code (Chapter 1).
+      def match(matchers, nodes)
+        if matchers.empty?
+          nodes.empty?
+        elsif !matchers[0].is_a?(Quantifier)
+          matchers[0].matches?(nodes[0]) && match(matchers[1..-1], nodes[1..-1])
+        else
+          quantifier = matchers[0]
+
+          # Too little elements?
+          return false if nodes.size < quantifier.min
+
+          # Make sure at least min elements match.
+          matches_min = nodes[0...quantifier.min].all? do |node|
+            quantifier.matcher.matches?(node)
+          end
+          return false unless matches_min
+
+          # Now try to match the remaining elements. The shortest match wins.
+          i = quantifier.min
+          max = if quantifier.max
+            [quantifier.max, nodes.size].min
+          else
+            nodes.size
+          end
+          while i <= max
+            return true if match(matchers[1..-1], nodes[i..-1])
+            i += 1
+            return false unless quantifier.matcher.matches?(nodes[i - 1])
+          end
+
+          # No match found.
+          false
+        end
       end
     end
 

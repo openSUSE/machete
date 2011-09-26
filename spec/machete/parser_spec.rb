@@ -39,6 +39,10 @@ module Machete
       NodeMatcher.new(:Foo, { attr => @i42 })
     end
 
+    def array_matcher_with_quantifier(min, max)
+      ArrayMatcher.new([Quantifier.new(@ch4243, min, max)])
+    end
+
     # Canonical expression is "42 | 43".
     it "parses expression" do
       '42'.should be_parsed_as(@i42)
@@ -81,6 +85,8 @@ module Machete
     it "parses method_name" do
       'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
       'Foo<any = 42>'.should be_parsed_as(node_matcher_with_attr(:any))
+      'Foo<* = 42>'.should be_parsed_as(node_matcher_with_attr(:*))
+      'Foo<+ = 42>'.should be_parsed_as(node_matcher_with_attr(:+))
       'Foo< < = 42>'.should be_parsed_as(node_matcher_with_attr(:<))
       'Foo<> = 42>'.should be_parsed_as(node_matcher_with_attr(:>))
       'Foo<^ = 42>'.should be_parsed_as(node_matcher_with_attr(:^))
@@ -100,9 +106,35 @@ module Machete
 
     # Canonical items is "42, 43".
     it "parses items" do
+      '[42*]'.should be_parsed_as(
+        ArrayMatcher.new([Quantifier.new(@i42, 0, nil)])
+      )
+      '[42*, 43*]'.should be_parsed_as(ArrayMatcher.new([
+        Quantifier.new(@i42, 0, nil),
+        Quantifier.new(@i43, 0, nil)
+      ]))
+    end
+
+    # Canonical item is "42*".
+    it "parses item" do
       '[42 | 43]'.should be_parsed_as(ArrayMatcher.new([@ch4243]))
-      '[42 | 43, 44 | 45]'.should be_parsed_as(
-        ArrayMatcher.new([@ch4243, @ch4445])
+      '[42*]'.should be_parsed_as(
+        ArrayMatcher.new([Quantifier.new(@i42, 0, nil)])
+      )
+    end
+
+    # Canonical quantifier is "42*".
+    it "parses quantifier" do
+      '[42 | 43*]'.should be_parsed_as(array_matcher_with_quantifier(0, nil))
+      '[42 | 43+]'.should be_parsed_as(array_matcher_with_quantifier(1, nil))
+      '[42 | 43?]'.should be_parsed_as(array_matcher_with_quantifier(0, 1))
+      '[42 | 43{44}]'.should be_parsed_as(array_matcher_with_quantifier(44, 44))
+      '[42 | 43{44,}]'.should be_parsed_as(
+        array_matcher_with_quantifier(44, nil)
+      )
+      '[42 | 43{,44}]'.should be_parsed_as(array_matcher_with_quantifier(0, 44))
+      '[42 | 43{44,45}]'.should be_parsed_as(
+        array_matcher_with_quantifier(44, 45)
       )
     end
 
@@ -139,9 +171,7 @@ module Machete
       # Operators (sorted alphabetically)
       'Foo<% = 42>'.should be_parsed_as(node_matcher_with_attr(:%))
       'Foo<& = 42>'.should be_parsed_as(node_matcher_with_attr(:&))
-      'Foo<* = 42>'.should be_parsed_as(node_matcher_with_attr(:*))
       'Foo<** = 42>'.should be_parsed_as(node_matcher_with_attr(:**))
-      'Foo<+ = 42>'.should be_parsed_as(node_matcher_with_attr(:+))
       'Foo<+@ = 42>'.should be_parsed_as(node_matcher_with_attr(:+@))
       'Foo<- = 42>'.should be_parsed_as(node_matcher_with_attr(:-))
       'Foo<-@ = 42>'.should be_parsed_as(node_matcher_with_attr(:-@))
