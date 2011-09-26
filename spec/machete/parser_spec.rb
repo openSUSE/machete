@@ -39,8 +39,8 @@ module Machete
       NodeMatcher.new(:Foo, { attr => @i42 })
     end
 
-    def array_matcher_with_quantifier(min, max)
-      ArrayMatcher.new([Quantifier.new(@ch4243, min, max)])
+    def array_matcher_with_quantifier(min, max, step)
+      ArrayMatcher.new([Quantifier.new(@ch4243, min, max, step)])
     end
 
     # Canonical expression is "42 | 43".
@@ -85,6 +85,8 @@ module Machete
     it "parses method_name" do
       'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
       'Foo<any = 42>'.should be_parsed_as(node_matcher_with_attr(:any))
+      'Foo<even = 42>'.should be_parsed_as(node_matcher_with_attr(:even))
+      'Foo<odd = 42>'.should be_parsed_as(node_matcher_with_attr(:odd))
       'Foo<* = 42>'.should be_parsed_as(node_matcher_with_attr(:*))
       'Foo<+ = 42>'.should be_parsed_as(node_matcher_with_attr(:+))
       'Foo< < = 42>'.should be_parsed_as(node_matcher_with_attr(:<))
@@ -107,11 +109,11 @@ module Machete
     # Canonical items is "42, 43".
     it "parses items" do
       '[42*]'.should be_parsed_as(
-        ArrayMatcher.new([Quantifier.new(@i42, 0, nil)])
+        ArrayMatcher.new([Quantifier.new(@i42, 0, nil, 1)])
       )
       '[42*, 43*]'.should be_parsed_as(ArrayMatcher.new([
-        Quantifier.new(@i42, 0, nil),
-        Quantifier.new(@i43, 0, nil)
+        Quantifier.new(@i42, 0, nil, 1),
+        Quantifier.new(@i43, 0, nil, 1)
       ]))
     end
 
@@ -119,22 +121,25 @@ module Machete
     it "parses item" do
       '[42 | 43]'.should be_parsed_as(ArrayMatcher.new([@ch4243]))
       '[42*]'.should be_parsed_as(
-        ArrayMatcher.new([Quantifier.new(@i42, 0, nil)])
+        ArrayMatcher.new([Quantifier.new(@i42, 0, nil, 1)])
       )
     end
 
     # Canonical quantifier is "42*".
     it "parses quantifier" do
-      '[42 | 43*]'.should be_parsed_as(array_matcher_with_quantifier(0, nil))
-      '[42 | 43+]'.should be_parsed_as(array_matcher_with_quantifier(1, nil))
-      '[42 | 43?]'.should be_parsed_as(array_matcher_with_quantifier(0, 1))
-      '[42 | 43{44}]'.should be_parsed_as(array_matcher_with_quantifier(44, 44))
-      '[42 | 43{44,}]'.should be_parsed_as(
-        array_matcher_with_quantifier(44, nil)
+      '[42 | 43*]'.should be_parsed_as(array_matcher_with_quantifier(0, nil, 1))
+      '[42 | 43+]'.should be_parsed_as(array_matcher_with_quantifier(1, nil, 1))
+      '[42 | 43?]'.should be_parsed_as(array_matcher_with_quantifier(0, 1, 1))
+      '[42 | 43{44}]'.should be_parsed_as(
+        array_matcher_with_quantifier(44, 44, 1)
       )
-      '[42 | 43{,44}]'.should be_parsed_as(array_matcher_with_quantifier(0, 44))
+      '[42 | 43{44,}]'.should be_parsed_as(
+        array_matcher_with_quantifier(44, nil, 1)
+      )
+      '[42 | 43{,44}]'.should be_parsed_as(
+        array_matcher_with_quantifier(0, 44, 1))
       '[42 | 43{44,45}]'.should be_parsed_as(
-        array_matcher_with_quantifier(44, 45)
+        array_matcher_with_quantifier(44, 45, 1)
       )
     end
 
@@ -380,6 +385,20 @@ module Machete
     # Canonical ANY is "any".
     it "parses ANY" do
       'any'.should be_parsed_as(AnyMatcher.new)
+    end
+
+    # Canonical EVEN is "even".
+    it "parses EVEN" do
+      '[42{even}]'.should be_parsed_as(
+        ArrayMatcher.new([Quantifier.new(@i42, 0, nil, 2)])
+      )
+    end
+
+    # Canonical ODD is "odd".
+    it "parses ODD" do
+      '[42{odd}]'.should be_parsed_as(
+        ArrayMatcher.new([Quantifier.new(@i42, 1, nil, 2)])
+      )
     end
 
     it "skips whitespace before tokens" do

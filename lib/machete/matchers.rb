@@ -4,17 +4,18 @@ module Machete
     # @private
     class Quantifier
       # :min should be always set, :max can be nil (meaning infinity)
-      attr_reader :matcher, :min, :max
+      attr_reader :matcher, :min, :max, :step
 
-      def initialize(matcher, min, max)
-        @matcher, @min, @max = matcher, min, max
+      def initialize(matcher, min, max, step)
+        @matcher, @min, @max, @step = matcher, min, max, step
       end
 
       def ==(other)
         other.instance_of?(self.class) &&
           @matcher == other.matcher &&
           @min == other.min &&
-          @max == other.max
+          @max == other.max &&
+          @step == other.step
       end
     end
 
@@ -103,8 +104,13 @@ module Machete
           end
           while i <= max
             return true if match(matchers[1..-1], nodes[i..-1])
-            i += 1
-            return false unless quantifier.matcher.matches?(nodes[i - 1])
+
+            matches_next = nodes[i...(i + quantifier.step)].all? do |node|
+              quantifier.matcher.matches?(node)
+            end
+            return false unless matches_next
+
+            i += quantifier.step
           end
 
           # No match found.

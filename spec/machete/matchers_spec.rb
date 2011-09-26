@@ -3,7 +3,7 @@ require "spec_helper"
 module Machete::Matchers
   describe Quantifier do
     before :each do
-      @quantifier = Quantifier.new(LiteralMatcher.new(42), 0, 100)
+      @quantifier = Quantifier.new(LiteralMatcher.new(42), 0, 100, 10)
     end
 
     describe "initialize" do
@@ -11,6 +11,7 @@ module Machete::Matchers
         @quantifier.matcher.should == LiteralMatcher.new(42)
         @quantifier.min.should == 0
         @quantifier.max.should == 100
+        @quantifier.step.should == 10
       end
     end
 
@@ -20,7 +21,7 @@ module Machete::Matchers
       end
 
       it "returns true when passed a Quantifier initialized with the same parameters" do
-        @quantifier.should == Quantifier.new(LiteralMatcher.new(42), 0, 100)
+        @quantifier.should == Quantifier.new(LiteralMatcher.new(42), 0, 100, 10)
       end
 
       it "returns false when passed some random object" do
@@ -32,13 +33,18 @@ module Machete::Matchers
         end
 
         @quantifier.should_not ==
-          SubclassedQuantifier.new(LiteralMatcher.new(42), 0, 100)
+          SubclassedQuantifier.new(LiteralMatcher.new(42), 0, 100, 10)
       end
 
       it "returns false when passed a Quantifier initialized with different parameters" do
-        @quantifier.should_not == Quantifier.new(LiteralMatcher.new(43), 0, 100)
-        @quantifier.should_not == Quantifier.new(LiteralMatcher.new(42), 1, 100)
-        @quantifier.should_not == Quantifier.new(LiteralMatcher.new(42), 0, 101)
+        @quantifier.should_not ==
+          Quantifier.new(LiteralMatcher.new(43), 0, 100, 10)
+        @quantifier.should_not ==
+          Quantifier.new(LiteralMatcher.new(42), 1, 100, 10)
+        @quantifier.should_not ==
+          Quantifier.new(LiteralMatcher.new(42), 0, 101, 10)
+        @quantifier.should_not ==
+          Quantifier.new(LiteralMatcher.new(42), 0, 100, 11)
       end
     end
   end
@@ -258,7 +264,7 @@ module Machete::Matchers
 
       it "works on matcher with a bound quantifier" do
         matcher = ArrayMatcher.new([
-          Quantifier.new(LiteralMatcher.new(42), 1, 2)
+          Quantifier.new(LiteralMatcher.new(42), 1, 2, 1)
         ])
 
         matcher.matches?([]).should be_false
@@ -270,10 +276,26 @@ module Machete::Matchers
         matcher.matches?([42, 42, 42]).should be_false
       end
 
+      it "works on matcher with a bound quantifier with a bigger step" do
+        matcher = ArrayMatcher.new([
+          Quantifier.new(LiteralMatcher.new(42), 1, 3, 2)
+        ])
+
+        matcher.matches?([]).should be_false
+        matcher.matches?([42]).should be_true
+        matcher.matches?([43]).should be_false
+        matcher.matches?([42, 42]).should be_false
+        matcher.matches?([42, 42, 42]).should be_true
+        matcher.matches?([43, 42, 42]).should be_false
+        matcher.matches?([42, 43, 42]).should be_false
+        matcher.matches?([42, 42, 43]).should be_false
+        matcher.matches?([42, 42, 42, 42]).should be_false
+      end
+
       it "works on matcher with a bound quantifier and some items" do
         matcher = ArrayMatcher.new([
           LiteralMatcher.new(42),
-          Quantifier.new(LiteralMatcher.new(43), 0, 1),
+          Quantifier.new(LiteralMatcher.new(43), 0, 1, 1),
           LiteralMatcher.new(44)
         ])
 
@@ -285,7 +307,7 @@ module Machete::Matchers
 
       it "works on matcher with an unbound quantifier" do
         matcher = ArrayMatcher.new([
-          Quantifier.new(LiteralMatcher.new(42), 1, nil)
+          Quantifier.new(LiteralMatcher.new(42), 1, nil, 1)
         ])
 
         matcher.matches?([]).should be_false
@@ -300,10 +322,25 @@ module Machete::Matchers
         matcher.matches?([42, 42, 43]).should be_false
       end
 
+      it "works on matcher with an unbound quantifier with a bigger step" do
+        matcher = ArrayMatcher.new([
+          Quantifier.new(LiteralMatcher.new(42), 1, nil, 2)
+        ])
+
+        matcher.matches?([]).should be_false
+        matcher.matches?([42]).should be_true
+        matcher.matches?([43]).should be_false
+        matcher.matches?([42, 42]).should be_false
+        matcher.matches?([42, 42, 42]).should be_true
+        matcher.matches?([43, 42, 42]).should be_false
+        matcher.matches?([42, 43, 42]).should be_false
+        matcher.matches?([42, 42, 43]).should be_false
+      end
+
       it "works on matcher with an unbound quantifier and some items" do
         matcher = ArrayMatcher.new([
           LiteralMatcher.new(42),
-          Quantifier.new(LiteralMatcher.new(43), 0, nil),
+          Quantifier.new(LiteralMatcher.new(43), 0, nil, 1),
           LiteralMatcher.new(44)
         ])
 

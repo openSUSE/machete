@@ -6,6 +6,8 @@ token SYMBOL
 token INTEGER
 token STRING
 token ANY
+token EVEN
+token ODD
 
 start expression
 
@@ -48,9 +50,12 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
        }
 
 # Hack to overcome the fact that some tokens will lex as simple tokens, not
-# METHOD_NAME tokens, and that "any" will lex as ANY token.
+# METHOD_NAME tokens, and that "reserved words" will lex as separate kinds of
+# tokens.
 method_name : METHOD_NAME
             | ANY
+            | EVEN
+            | ODD
             | "*"
             | "+"
             | "<"
@@ -69,21 +74,23 @@ items : item           { result = [val[0]] }
 item : expression
      | expression quantifier { result = Quantifier.new(val[0], *val[1]) }
 
-quantifier : "*" { result = [0, nil] }
-           | "+" { result = [1, nil] }
-           | "?" { result = [0, 1] }
+quantifier : "*" { result = [0, nil, 1] }
+           | "+" { result = [1, nil, 1] }
+           | "?" { result = [0, 1, 1] }
            | "{" INTEGER "}" {
-             result = [integer_value(val[1]), integer_value(val[1])]
+             result = [integer_value(val[1]), integer_value(val[1]), 1]
            }
            | "{" INTEGER "," "}" {
-             result = [integer_value(val[1]), nil]
+             result = [integer_value(val[1]), nil, 1]
            }
            | "{" "," INTEGER "}" {
-             result = [0, integer_value(val[2])]
+             result = [0, integer_value(val[2]), 1]
            }
            | "{" INTEGER "," INTEGER "}" {
-             result = [integer_value(val[1]), integer_value(val[3])]
+             result = [integer_value(val[1]), integer_value(val[3]), 1]
            }
+           | "{" EVEN "}" { result = [0, nil, 2] }
+           | "{" ODD "}"  { result = [1, nil, 2] }
 
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
         | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
@@ -217,9 +224,11 @@ COMPLEX_TOKENS = [
       )
     /x
   ],
-  # ANY needs to be before METHOD_NAME, otherwise "any" would be recognized as a
-  # method name.
-  [:ANY, /^any/],
+  # ANY, EVEN and ODD need to be before METHOD_NAME, otherwise they would be
+  # recognized as method names.
+  [:ANY,  /^any/],
+  [:EVEN, /^even/],
+  [:ODD,  /^odd/],
   # We exclude "*", "+", "<", ">", "^" and "|" from method names since they are
   # lexed as simple tokens. This is because they have also other meanings in
   # Machette patterns beside Ruby method names.
