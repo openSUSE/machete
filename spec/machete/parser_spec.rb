@@ -155,118 +155,6 @@ module Machete
       'any'.should be_parsed_as(AnyMatcher.new)
     end
 
-    # Canonical METHOD_NAME is "a".
-    it "parses METHOD_NAME" do
-      # Regular names
-      'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
-      'Foo<z = 42>'.should be_parsed_as(node_matcher_with_attr(:z))
-      'Foo<_ = 42>'.should be_parsed_as(node_matcher_with_attr(:_))
-      'Foo<aa = 42>'.should be_parsed_as(node_matcher_with_attr(:aa))
-      'Foo<az = 42>'.should be_parsed_as(node_matcher_with_attr(:az))
-      'Foo<aA = 42>'.should be_parsed_as(node_matcher_with_attr(:aA))
-      'Foo<aZ = 42>'.should be_parsed_as(node_matcher_with_attr(:aZ))
-      'Foo<a0 = 42>'.should be_parsed_as(node_matcher_with_attr(:a0))
-      'Foo<a9 = 42>'.should be_parsed_as(node_matcher_with_attr(:a9))
-      'Foo<a_ = 42>'.should be_parsed_as(node_matcher_with_attr(:a_))
-      'Foo<abcd = 42>'.should be_parsed_as(node_matcher_with_attr(:abcd))
-      'Foo<a? = 42>'.should be_parsed_as(node_matcher_with_attr(:a?))
-      'Foo<a! = 42>'.should be_parsed_as(node_matcher_with_attr(:a!))
-      'Foo<a= = 42>'.should be_parsed_as(node_matcher_with_attr(:a=))
-
-      # Operators (sorted alphabetically)
-      'Foo<% = 42>'.should be_parsed_as(node_matcher_with_attr(:%))
-      'Foo<& = 42>'.should be_parsed_as(node_matcher_with_attr(:&))
-      'Foo<** = 42>'.should be_parsed_as(node_matcher_with_attr(:**))
-      'Foo<+@ = 42>'.should be_parsed_as(node_matcher_with_attr(:+@))
-      'Foo<- = 42>'.should be_parsed_as(node_matcher_with_attr(:-))
-      'Foo<-@ = 42>'.should be_parsed_as(node_matcher_with_attr(:-@))
-      'Foo</ = 42>'.should be_parsed_as(node_matcher_with_attr(:/))
-      'Foo< << = 42>'.should be_parsed_as(node_matcher_with_attr(:<<))
-      'Foo< <= = 42>'.should be_parsed_as(node_matcher_with_attr(:<=))
-      'Foo< <=> = 42>'.should be_parsed_as(node_matcher_with_attr(:<=>))
-      'Foo< == = 42>'.should be_parsed_as(node_matcher_with_attr(:==))
-      'Foo< === = 42>'.should be_parsed_as(node_matcher_with_attr(:===))
-      'Foo< =~ = 42>'.should be_parsed_as(node_matcher_with_attr(:=~))
-      'Foo<>= = 42>'.should be_parsed_as(node_matcher_with_attr(:>=))
-      'Foo<>> = 42>'.should be_parsed_as(node_matcher_with_attr(:>>))
-      'Foo<[] = 42>'.should be_parsed_as(node_matcher_with_attr(:[]))
-      'Foo<[]= = 42>'.should be_parsed_as(node_matcher_with_attr(:[]=))
-      'Foo<` = 42>'.should be_parsed_as(node_matcher_with_attr(:`))
-      'Foo<~ = 42>'.should be_parsed_as(node_matcher_with_attr(:~))
-    end
-
-    # Canonical CLASS_NAME is "A".
-    it "parses CLASS_NAME" do
-      'A'.should be_parsed_as(NodeMatcher.new(:A))
-      'Z'.should be_parsed_as(NodeMatcher.new(:Z))
-      'Aa'.should be_parsed_as(NodeMatcher.new(:Aa))
-      'Az'.should be_parsed_as(NodeMatcher.new(:Az))
-      'AA'.should be_parsed_as(NodeMatcher.new(:AA))
-      'AZ'.should be_parsed_as(NodeMatcher.new(:AZ))
-      'A0'.should be_parsed_as(NodeMatcher.new(:A0))
-      'A9'.should be_parsed_as(NodeMatcher.new(:A9))
-      'A_'.should be_parsed_as(NodeMatcher.new(:A_))
-      'Abcd'.should be_parsed_as(NodeMatcher.new(:Abcd))
-    end
-
-    # Canonical SYMBOL is ":a".
-    it "parses SYMBOL" do
-      # Class names
-      ':A'.should be_parsed_as(LiteralMatcher.new(:A))
-      ':Z'.should be_parsed_as(LiteralMatcher.new(:Z))
-      ':Aa'.should be_parsed_as(LiteralMatcher.new(:Aa))
-      ':Az'.should be_parsed_as(LiteralMatcher.new(:Az))
-      ':AA'.should be_parsed_as(LiteralMatcher.new(:AA))
-      ':AZ'.should be_parsed_as(LiteralMatcher.new(:AZ))
-      ':A0'.should be_parsed_as(LiteralMatcher.new(:A0))
-      ':A9'.should be_parsed_as(LiteralMatcher.new(:A9))
-      ':A_'.should be_parsed_as(LiteralMatcher.new(:A_))
-      ':Abcd'.should be_parsed_as(LiteralMatcher.new(:Abcd))
-
-      # Regular method names
-      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
-      ':z'.should be_parsed_as(LiteralMatcher.new(:z))
-      ':_'.should be_parsed_as(LiteralMatcher.new(:_))
-      ':aa'.should be_parsed_as(LiteralMatcher.new(:aa))
-      ':az'.should be_parsed_as(LiteralMatcher.new(:az))
-      ':aA'.should be_parsed_as(LiteralMatcher.new(:aA))
-      ':aZ'.should be_parsed_as(LiteralMatcher.new(:aZ))
-      ':a0'.should be_parsed_as(LiteralMatcher.new(:a0))
-      ':a9'.should be_parsed_as(LiteralMatcher.new(:a9))
-      ':a_'.should be_parsed_as(LiteralMatcher.new(:a_))
-      ':abcd'.should be_parsed_as(LiteralMatcher.new(:abcd))
-      ':a?'.should be_parsed_as(LiteralMatcher.new(:a?))
-      ':a!'.should be_parsed_as(LiteralMatcher.new(:a!))
-      ':a='.should be_parsed_as(LiteralMatcher.new(:a=))
-
-      # Operators (sorted alphabetically)
-      ':%'.should be_parsed_as(LiteralMatcher.new(:%))
-      ':&'.should be_parsed_as(LiteralMatcher.new(:&))
-      ':*'.should be_parsed_as(LiteralMatcher.new(:*))
-      ':**'.should be_parsed_as(LiteralMatcher.new(:**))
-      ':+'.should be_parsed_as(LiteralMatcher.new(:+))
-      ':+@'.should be_parsed_as(LiteralMatcher.new(:+@))
-      ':-'.should be_parsed_as(LiteralMatcher.new(:-))
-      ':-@'.should be_parsed_as(LiteralMatcher.new(:-@))
-      ':/'.should be_parsed_as(LiteralMatcher.new(:/))
-      ':<'.should be_parsed_as(LiteralMatcher.new(:<))
-      ':<<'.should be_parsed_as(LiteralMatcher.new(:<<))
-      ':<='.should be_parsed_as(LiteralMatcher.new(:<=))
-      ':<=>'.should be_parsed_as(LiteralMatcher.new(:<=>))
-      ':=='.should be_parsed_as(LiteralMatcher.new(:==))
-      ':==='.should be_parsed_as(LiteralMatcher.new(:===))
-      ':=~'.should be_parsed_as(LiteralMatcher.new(:=~))
-      ':>'.should be_parsed_as(LiteralMatcher.new(:>))
-      ':>='.should be_parsed_as(LiteralMatcher.new(:>=))
-      ':>>'.should be_parsed_as(LiteralMatcher.new(:>>))
-      ':[]'.should be_parsed_as(LiteralMatcher.new(:[]))
-      ':[]='.should be_parsed_as(LiteralMatcher.new(:[]=))
-      ':^'.should be_parsed_as(LiteralMatcher.new(:^))
-      ':`'.should be_parsed_as(LiteralMatcher.new(:`))
-      ':|'.should be_parsed_as(LiteralMatcher.new(:|))
-      ':~'.should be_parsed_as(LiteralMatcher.new(:~))
-    end
-
     # Canonical INTEGER is "42".
     it "parses INTEGER" do
       # Sign
@@ -399,6 +287,118 @@ module Machete
       '[42{odd}]'.should be_parsed_as(
         ArrayMatcher.new([Quantifier.new(@i42, 1, nil, 2)])
       )
+    end
+
+    # Canonical METHOD_NAME is "a".
+    it "parses METHOD_NAME" do
+      # Regular names
+      'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
+      'Foo<z = 42>'.should be_parsed_as(node_matcher_with_attr(:z))
+      'Foo<_ = 42>'.should be_parsed_as(node_matcher_with_attr(:_))
+      'Foo<aa = 42>'.should be_parsed_as(node_matcher_with_attr(:aa))
+      'Foo<az = 42>'.should be_parsed_as(node_matcher_with_attr(:az))
+      'Foo<aA = 42>'.should be_parsed_as(node_matcher_with_attr(:aA))
+      'Foo<aZ = 42>'.should be_parsed_as(node_matcher_with_attr(:aZ))
+      'Foo<a0 = 42>'.should be_parsed_as(node_matcher_with_attr(:a0))
+      'Foo<a9 = 42>'.should be_parsed_as(node_matcher_with_attr(:a9))
+      'Foo<a_ = 42>'.should be_parsed_as(node_matcher_with_attr(:a_))
+      'Foo<abcd = 42>'.should be_parsed_as(node_matcher_with_attr(:abcd))
+      'Foo<a? = 42>'.should be_parsed_as(node_matcher_with_attr(:a?))
+      'Foo<a! = 42>'.should be_parsed_as(node_matcher_with_attr(:a!))
+      'Foo<a= = 42>'.should be_parsed_as(node_matcher_with_attr(:a=))
+
+      # Operators (sorted alphabetically)
+      'Foo<% = 42>'.should be_parsed_as(node_matcher_with_attr(:%))
+      'Foo<& = 42>'.should be_parsed_as(node_matcher_with_attr(:&))
+      'Foo<** = 42>'.should be_parsed_as(node_matcher_with_attr(:**))
+      'Foo<+@ = 42>'.should be_parsed_as(node_matcher_with_attr(:+@))
+      'Foo<- = 42>'.should be_parsed_as(node_matcher_with_attr(:-))
+      'Foo<-@ = 42>'.should be_parsed_as(node_matcher_with_attr(:-@))
+      'Foo</ = 42>'.should be_parsed_as(node_matcher_with_attr(:/))
+      'Foo< << = 42>'.should be_parsed_as(node_matcher_with_attr(:<<))
+      'Foo< <= = 42>'.should be_parsed_as(node_matcher_with_attr(:<=))
+      'Foo< <=> = 42>'.should be_parsed_as(node_matcher_with_attr(:<=>))
+      'Foo< == = 42>'.should be_parsed_as(node_matcher_with_attr(:==))
+      'Foo< === = 42>'.should be_parsed_as(node_matcher_with_attr(:===))
+      'Foo< =~ = 42>'.should be_parsed_as(node_matcher_with_attr(:=~))
+      'Foo<>= = 42>'.should be_parsed_as(node_matcher_with_attr(:>=))
+      'Foo<>> = 42>'.should be_parsed_as(node_matcher_with_attr(:>>))
+      'Foo<[] = 42>'.should be_parsed_as(node_matcher_with_attr(:[]))
+      'Foo<[]= = 42>'.should be_parsed_as(node_matcher_with_attr(:[]=))
+      'Foo<` = 42>'.should be_parsed_as(node_matcher_with_attr(:`))
+      'Foo<~ = 42>'.should be_parsed_as(node_matcher_with_attr(:~))
+    end
+
+    # Canonical CLASS_NAME is "A".
+    it "parses CLASS_NAME" do
+      'A'.should be_parsed_as(NodeMatcher.new(:A))
+      'Z'.should be_parsed_as(NodeMatcher.new(:Z))
+      'Aa'.should be_parsed_as(NodeMatcher.new(:Aa))
+      'Az'.should be_parsed_as(NodeMatcher.new(:Az))
+      'AA'.should be_parsed_as(NodeMatcher.new(:AA))
+      'AZ'.should be_parsed_as(NodeMatcher.new(:AZ))
+      'A0'.should be_parsed_as(NodeMatcher.new(:A0))
+      'A9'.should be_parsed_as(NodeMatcher.new(:A9))
+      'A_'.should be_parsed_as(NodeMatcher.new(:A_))
+      'Abcd'.should be_parsed_as(NodeMatcher.new(:Abcd))
+    end
+
+    # Canonical SYMBOL is ":a".
+    it "parses SYMBOL" do
+      # Class names
+      ':A'.should be_parsed_as(LiteralMatcher.new(:A))
+      ':Z'.should be_parsed_as(LiteralMatcher.new(:Z))
+      ':Aa'.should be_parsed_as(LiteralMatcher.new(:Aa))
+      ':Az'.should be_parsed_as(LiteralMatcher.new(:Az))
+      ':AA'.should be_parsed_as(LiteralMatcher.new(:AA))
+      ':AZ'.should be_parsed_as(LiteralMatcher.new(:AZ))
+      ':A0'.should be_parsed_as(LiteralMatcher.new(:A0))
+      ':A9'.should be_parsed_as(LiteralMatcher.new(:A9))
+      ':A_'.should be_parsed_as(LiteralMatcher.new(:A_))
+      ':Abcd'.should be_parsed_as(LiteralMatcher.new(:Abcd))
+
+      # Regular method names
+      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
+      ':z'.should be_parsed_as(LiteralMatcher.new(:z))
+      ':_'.should be_parsed_as(LiteralMatcher.new(:_))
+      ':aa'.should be_parsed_as(LiteralMatcher.new(:aa))
+      ':az'.should be_parsed_as(LiteralMatcher.new(:az))
+      ':aA'.should be_parsed_as(LiteralMatcher.new(:aA))
+      ':aZ'.should be_parsed_as(LiteralMatcher.new(:aZ))
+      ':a0'.should be_parsed_as(LiteralMatcher.new(:a0))
+      ':a9'.should be_parsed_as(LiteralMatcher.new(:a9))
+      ':a_'.should be_parsed_as(LiteralMatcher.new(:a_))
+      ':abcd'.should be_parsed_as(LiteralMatcher.new(:abcd))
+      ':a?'.should be_parsed_as(LiteralMatcher.new(:a?))
+      ':a!'.should be_parsed_as(LiteralMatcher.new(:a!))
+      ':a='.should be_parsed_as(LiteralMatcher.new(:a=))
+
+      # Operators (sorted alphabetically)
+      ':%'.should be_parsed_as(LiteralMatcher.new(:%))
+      ':&'.should be_parsed_as(LiteralMatcher.new(:&))
+      ':*'.should be_parsed_as(LiteralMatcher.new(:*))
+      ':**'.should be_parsed_as(LiteralMatcher.new(:**))
+      ':+'.should be_parsed_as(LiteralMatcher.new(:+))
+      ':+@'.should be_parsed_as(LiteralMatcher.new(:+@))
+      ':-'.should be_parsed_as(LiteralMatcher.new(:-))
+      ':-@'.should be_parsed_as(LiteralMatcher.new(:-@))
+      ':/'.should be_parsed_as(LiteralMatcher.new(:/))
+      ':<'.should be_parsed_as(LiteralMatcher.new(:<))
+      ':<<'.should be_parsed_as(LiteralMatcher.new(:<<))
+      ':<='.should be_parsed_as(LiteralMatcher.new(:<=))
+      ':<=>'.should be_parsed_as(LiteralMatcher.new(:<=>))
+      ':=='.should be_parsed_as(LiteralMatcher.new(:==))
+      ':==='.should be_parsed_as(LiteralMatcher.new(:===))
+      ':=~'.should be_parsed_as(LiteralMatcher.new(:=~))
+      ':>'.should be_parsed_as(LiteralMatcher.new(:>))
+      ':>='.should be_parsed_as(LiteralMatcher.new(:>=))
+      ':>>'.should be_parsed_as(LiteralMatcher.new(:>>))
+      ':[]'.should be_parsed_as(LiteralMatcher.new(:[]))
+      ':[]='.should be_parsed_as(LiteralMatcher.new(:[]=))
+      ':^'.should be_parsed_as(LiteralMatcher.new(:^))
+      ':`'.should be_parsed_as(LiteralMatcher.new(:`))
+      ':|'.should be_parsed_as(LiteralMatcher.new(:|))
+      ':~'.should be_parsed_as(LiteralMatcher.new(:~))
     end
 
     it "skips whitespace before tokens" do

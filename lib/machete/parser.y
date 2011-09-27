@@ -1,13 +1,13 @@
 class Machete::Parser
 
-token METHOD_NAME
-token CLASS_NAME
-token SYMBOL
 token INTEGER
 token STRING
 token ANY
 token EVEN
 token ODD
+token METHOD_NAME
+token CLASS_NAME
+token SYMBOL
 
 start expression
 
