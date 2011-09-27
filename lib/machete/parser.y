@@ -154,7 +154,7 @@ def string_value(value)
 end
 
 # "^" needs to be here because if it were among operators recognized by
-# METHOD_NAME, "^=" would be recognized as two token.
+# METHOD_NAME, "^=" would be recognized as two tokens.
 SIMPLE_TOKENS = [
   "|",
   "<",
