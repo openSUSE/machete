@@ -32,7 +32,7 @@ module Machete
       end
 
       def matches?(node)
-        alternatives.any? { |a| a.matches?(node) }
+        @alternatives.any? { |a| a.matches?(node) }
       end
     end
 
@@ -52,7 +52,7 @@ module Machete
 
       def matches?(node)
         node.class == Rubinius::AST.const_get(@class_name) &&
-          attrs.all? { |name, matcher| matcher.matches?(node.send(name)) }
+          @attrs.all? { |name, matcher| matcher.matches?(node.send(name)) }
       end
     end
 
