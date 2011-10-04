@@ -2,3 +2,4 @@ lib/machete/parser.rb
 doc/
 .yardoc
 *.rbc
+Gemfile.lock
