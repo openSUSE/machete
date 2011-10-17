@@ -1,5 +1,8 @@
 class Machete::Parser
 
+token TRUE
+token FALSE
+token NIL
 token INTEGER
 token STRING
 token ANY
@@ -95,6 +98,9 @@ quantifier : "*" { result = [0, nil, 1] }
 literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
         | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
         | STRING  { result = LiteralMatcher.new(string_value(val[0])) }
+        | TRUE	  { result = LiteralMatcher.new(true) }
+        | FALSE   { result = LiteralMatcher.new(false) }
+        | NIL     { result = LiteralMatcher.new(nil) }
 
 any : ANY { result = AnyMatcher.new }
 
@@ -174,6 +180,9 @@ SIMPLE_TOKENS = [
 ]
 
 COMPLEX_TOKENS = [
+  [:TRUE,  /^true/],
+  [:FALSE, /^false/],
+  [:NIL,   /^nil/],
   # INTEGER needs to be before METHOD_NAME, otherwise e.g. "+1" would be
   # recognized as two tokens.
   [
