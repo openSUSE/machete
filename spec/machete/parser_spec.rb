@@ -148,11 +148,29 @@ module Machete
       ':a'.should be_parsed_as(LiteralMatcher.new(:a))
       '42'.should be_parsed_as(@i42)
       '"abcd"'.should be_parsed_as(LiteralMatcher.new("abcd"))
+      'true'.should be_parsed_as(LiteralMatcher.new(true))
+      'false'.should be_parsed_as(LiteralMatcher.new(false))
+      'nil'.should be_parsed_as(LiteralMatcher.new(nil))
     end
 
     # Canonical any is "any".
     it "parses any" do
       'any'.should be_parsed_as(AnyMatcher.new)
+    end
+
+    # Canonical TRUE is "true".
+    it "parses TRUE" do
+      'true'.should be_parsed_as(LiteralMatcher.new(true))
+    end
+
+    # Canonical FALSE is "false".
+    it "parses FALSE" do
+      'false'.should be_parsed_as(LiteralMatcher.new(false))
+    end
+
+    # Canonical NIL is "nil".
+    it "parses NIL" do
+      'nil'.should be_parsed_as(LiteralMatcher.new(nil))
     end
 
     # Canonical INTEGER is "42".

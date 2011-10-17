@@ -70,7 +70,7 @@ If you want to match a specific attribute of a node, specify its value inside `<
     Machete.matches?('42'.to_ast, 'FixnumLiteral<value = 42>') # => true
     Machete.matches?('45'.to_ast, 'FixnumLiteral<value = 42>') # => false
 
-The attribute value can be an integer, string, symbol, array or other pattern. The last option means you can easily match nested nodes recursively. You can also specify multiple attributes:
+The attribute value can be `true`, `false`, `nil`, integer, string, symbol, array or other pattern. The last option means you can easily match nested nodes recursively. You can also specify multiple attributes:
 
     Machete.matches?('foo.bar'.to_ast, 'Send<receiver = Send<receiver = Self, name = :foo>, name = :bar>') # => true
 
