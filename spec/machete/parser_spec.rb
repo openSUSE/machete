@@ -84,6 +84,9 @@ module Machete
     # Canonical method_name is "a".
     it "parses method_name" do
       'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
+      'Foo<true = 42>'.should be_parsed_as(node_matcher_with_attr(:true))
+      'Foo<false = 42>'.should be_parsed_as(node_matcher_with_attr(:false))
+      'Foo<any = 42>'.should be_parsed_as(node_matcher_with_attr(:any))
       'Foo<any = 42>'.should be_parsed_as(node_matcher_with_attr(:any))
       'Foo<even = 42>'.should be_parsed_as(node_matcher_with_attr(:even))
       'Foo<odd = 42>'.should be_parsed_as(node_matcher_with_attr(:odd))

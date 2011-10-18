@@ -56,6 +56,9 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
 # METHOD_NAME tokens, and that "reserved words" will lex as separate kinds of
 # tokens.
 method_name : METHOD_NAME
+            | TRUE
+            | FALSE
+            | NIL
             | ANY
             | EVEN
             | ODD
