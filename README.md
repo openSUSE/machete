@@ -76,12 +76,14 @@ The attribute value can be `true`, `false`, `nil`, integer, string, symbol, arra
 
 #### String Attributes
 
-When matching string attributes values, you don't have to do a whole-string match using the `=` operator. You can also match the beginning or the end of a string attribute value using the `^=` or `$=` operators:
+When matching string attributes values, you don't have to do a whole-string match using the `=` operator. You can also match the beginning, the end or a part of a string attribute value using the `^=`, `$=` and `*=` operators:
 
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string ^= "ab">') # => true
     Machete.matches?('"efgh"'.to_ast, 'StringLiteral<string ^= "ab">') # => false
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string $= "cd">') # => true
     Machete.matches?('"efgh"'.to_ast, 'StringLiteral<string $= "cd">') # => false
+    Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= "bc">') # => true
+    Machete.matches?('"efgh"'.to_ast, 'StringLiteral<string *= "bc">') # => false
 
 #### Array Attributes
 

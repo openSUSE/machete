@@ -55,6 +55,13 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
            )
          }
        }
+     | method_name "*=" STRING {
+         result = {
+           val[0].to_sym => StringRegexpMatcher.new(
+             Regexp.new(Regexp.escape(string_value(val[2])))
+           )
+         }
+       }
 
 # Hack to overcome the fact that some tokens will lex as simple tokens, not
 # METHOD_NAME tokens, and that "reserved words" will lex as separate kinds of
@@ -179,6 +186,7 @@ SIMPLE_TOKENS = [
   "$=",
   "[",
   "]",
+  "*=",
   "*",
   "+",
   "?",

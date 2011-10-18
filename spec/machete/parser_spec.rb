@@ -89,6 +89,14 @@ module Machete
           /\[\]\{\}\(\)\|\-\*\.\\\?\+\^\$\ \#\t\f\v\n\r$/
         ))
       )
+      'Foo<a *= "abcd">'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(/abcd/))
+      )
+      'Foo<a *= "[]{}()|-*.\\?+^$ #\t\f\v\n\r">'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(
+          /\[\]\{\}\(\)\|\-\*\.\\\?\+\^\$\ \#\t\f\v\n\r/
+        ))
+      )
     end
 
     # Canonical method_name is "a".
