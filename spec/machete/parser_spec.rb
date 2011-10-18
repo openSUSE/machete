@@ -74,10 +74,20 @@ module Machete
     it "parses attr" do
       'Foo<a = 42 | 43>'.should be_parsed_as(NodeMatcher.new(:Foo, :a => @ch4243))
       'Foo<a ^= "abcd">'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => StartsWithMatcher.new("abcd"))
+        NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(/^abcd/))
+      )
+      'Foo<a ^= "[]{}()|-*.\\?+^$ #\t\f\v\n\r">'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(
+          /^\[\]\{\}\(\)\|\-\*\.\\\?\+\^\$\ \#\t\f\v\n\r/
+        ))
       )
       'Foo<a $= "abcd">'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => EndsWithMatcher.new("abcd"))
+        NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(/abcd$/))
+      )
+      'Foo<a $= "[]{}()|-*.\\?+^$ #\t\f\v\n\r">'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(
+          /\[\]\{\}\(\)\|\-\*\.\\\?\+\^\$\ \#\t\f\v\n\r$/
+        ))
       )
     end
 

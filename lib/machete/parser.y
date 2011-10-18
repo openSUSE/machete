@@ -43,12 +43,16 @@ attrs : attr
 attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
      | method_name "^=" STRING {
          result = {
-           val[0].to_sym => StartsWithMatcher.new(string_value(val[2]))
+           val[0].to_sym => StringRegexpMatcher.new(
+             Regexp.new("^" + Regexp.escape(string_value(val[2])))
+           )
          }
        }
      | method_name "$=" STRING {
          result = {
-           val[0].to_sym => EndsWithMatcher.new(string_value(val[2]))
+           val[0].to_sym => StringRegexpMatcher.new(
+             Regexp.new(Regexp.escape(string_value(val[2])) + "$")
+           )
          }
        }
 
