@@ -21,6 +21,14 @@ module Machete
         prefix + method_name
       end
 
+      def self.underscore(camel_cased_word)
+        camel_cased_word.to_s.gsub(/::/, '/').
+            gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+            gsub(/([a-z\d])([A-Z])/,'\1_\2').
+            tr("-", "_").
+            downcase
+      end
+
       Rubinius::AST.constants.each do |top_method|
         define_method dsl_method_name(top_method) do |*args, &block|
           __send__(top_method, *args, &block)
