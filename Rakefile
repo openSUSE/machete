@@ -5,7 +5,7 @@ desc "Generate the expression parser"
 task :parser do
   source = "lib/machete/parser.y"
   target = "lib/machete/parser.rb"
-  unless uptodate?(target, source)
+  unless uptodate?(target, [source])
     system "racc -o #{target} #{source}" or exit 1
   end
 end
