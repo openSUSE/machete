@@ -136,6 +136,7 @@ module Machete
       end
     end
 
+
     # @private
     class StringRegexpMatcher
       attr_reader :regexp
@@ -150,6 +151,13 @@ module Machete
 
       def matches?(node)
         node.is_a?(String) && node =~ @regexp
+      end
+    end
+
+    # @private
+    class SymbolRegexpMatcher < StringRegexpMatcher
+      def matches?(node)
+        node.is_a?(Symbol) && node.to_s =~ @regexp
       end
     end
 

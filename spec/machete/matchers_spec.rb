@@ -409,6 +409,57 @@ module Machete::Matchers
     end
   end
 
+  describe SymbolRegexpMatcher do
+    before do
+      @matcher = SymbolRegexpMatcher.new(/abcd/)
+    end
+
+    describe "initialize" do
+      it "sets attributes correctly" do
+        @matcher.regexp.should == /abcd/
+      end
+    end
+
+    describe "==" do
+      it "returns true when passed the same object" do
+        @matcher.should == @matcher
+      end
+
+      it "returns true when passed a StartsWithMatcher initialized with the same parameters" do
+        @matcher.should == SymbolRegexpMatcher.new(/abcd/)
+      end
+
+      it "returns false when passed some random object" do
+        @matcher.should_not == Object.new
+      end
+
+      it "returns false when passed a subclass of StartsWithMatcher initialized with the same parameters" do
+        class SubclassedSymbolRegexpMatcher < SymbolRegexpMatcher
+        end
+
+        @matcher.should_not == SubclassedSymbolRegexpMatcher.new(/abcd/)
+      end
+
+      it "returns false when passed a StartsWithMatcher initialized with different parameters" do
+        @matcher.should_not == SymbolRegexpMatcher.new(/efgh/)
+      end
+    end
+
+    describe "matches?" do
+      it "matches a string matching the regexp" do
+        @matcher.matches?(:efghabcdijkl).should be_true
+      end
+
+      it "does not match a string not matching the regexp" do
+        @matcher.matches?(:efghijkl).should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
   describe StringRegexpMatcher do
     before :each do
       @matcher = StringRegexpMatcher.new(/abcd/)

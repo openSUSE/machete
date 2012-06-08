@@ -41,6 +41,27 @@ attrs : attr
       | attrs "," attr { result = val[0].merge(val[2]) }
 
 attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
+     | method_name "^=" SYMBOL {
+         result = {
+           val[0].to_sym => SymbolRegexpMatcher.new(
+             Regexp.new("^" + Regexp.escape(symbol_value(val[2])))
+           )
+         }
+       }
+     | method_name "$=" SYMBOL {
+         result = {
+           val[0].to_sym => SymbolRegexpMatcher.new(
+             Regexp.new(Regexp.escape(symbol_value(val[2])) + "$")
+           )
+         }
+       }
+     | method_name "*=" SYMBOL {
+         result = {
+           val[0].to_sym => SymbolRegexpMatcher.new(
+             Regexp.new(Regexp.escape(symbol_value(val[2])))
+           )
+         }
+       }
      | method_name "^=" STRING {
          result = {
            val[0].to_sym => StringRegexpMatcher.new(
@@ -171,6 +192,10 @@ def string_value(value)
   else
     raise "Unknown quote: #{quote.inspect}."
   end
+end
+
+def symbol_value(value)
+  value.to_s[1..-1]
 end
 
 # "^" needs to be here because if it were among operators recognized by
