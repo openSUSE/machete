@@ -72,14 +72,15 @@ module Machete
 
     # Canonical attr is "a = 42".
     it "parses attr" do
-      'Foo<a ^= :symbol>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/^symbol/) ))
-      'Foo<a $= :symbol>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/symbol$/) ))
-      'Foo<a *= :symbol>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/symbol/) ))
-
       'Foo<a = 42 | 43>'.should be_parsed_as(NodeMatcher.new(:Foo, :a => @ch4243))
+
+      'Foo<a ^= :symbol>'.should be_parsed_as(
+                                     NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/^symbol/) ))
+      'Foo<a $= :symbol>'.should be_parsed_as(
+                                     NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/symbol$/) ))
+      'Foo<a *= :symbol>'.should be_parsed_as(
+                                     NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/symbol/) ))
+
       'Foo<a ^= "abcd">'.should be_parsed_as(
         NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(/^abcd/))
       )

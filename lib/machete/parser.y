@@ -130,7 +130,7 @@ quantifier : "*" { result = [0, nil, 1] }
            | "{" EVEN "}" { result = [0, nil, 2] }
            | "{" ODD "}"  { result = [1, nil, 2] }
 
-literal : SYMBOL  { result = LiteralMatcher.new(val[0][1..-1].to_sym) }
+literal : SYMBOL  { result = LiteralMatcher.new(symbol_value(val[0]).to_sym) }
         | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
         | STRING  { result = LiteralMatcher.new(string_value(val[0])) }
         | TRUE	  { result = LiteralMatcher.new(true) }

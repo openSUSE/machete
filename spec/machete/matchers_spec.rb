@@ -409,9 +409,11 @@ module Machete::Matchers
     end
   end
 
-  describe SymbolRegexpMatcher do
+  describe RegexpMatcher do
     before do
-      @matcher = SymbolRegexpMatcher.new(/abcd/)
+      @matcher = RegexpMatcher.new(/abcd/)
+      @object_true = stub(:=~ => true)
+      @object_false = stub(:=~ => false)
     end
 
     describe "initialize" do
@@ -426,7 +428,7 @@ module Machete::Matchers
       end
 
       it "returns true when passed a StartsWithMatcher initialized with the same parameters" do
-        @matcher.should == SymbolRegexpMatcher.new(/abcd/)
+        @matcher.should == RegexpMatcher.new(/abcd/)
       end
 
       it "returns false when passed some random object" do
@@ -434,15 +436,35 @@ module Machete::Matchers
       end
 
       it "returns false when passed a subclass of StartsWithMatcher initialized with the same parameters" do
-        class SubclassedSymbolRegexpMatcher < SymbolRegexpMatcher
+        class SubclassedRegexpMatcher < RegexpMatcher
         end
 
-        @matcher.should_not == SubclassedSymbolRegexpMatcher.new(/abcd/)
+        @matcher.should_not == SubclassedRegexpMatcher.new(/abcd/)
       end
 
       it "returns false when passed a StartsWithMatcher initialized with different parameters" do
-        @matcher.should_not == SymbolRegexpMatcher.new(/efgh/)
+        @matcher.should_not == RegexpMatcher.new(/efgh/)
       end
+    end
+
+    describe "matches?" do
+      it "matches a object matching the regexp" do
+        @matcher.matches?(@object_true).should be_true
+      end
+
+      it "does not match a object not matching the regexp" do
+        @matcher.matches?(@object_false).should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
+  describe SymbolRegexpMatcher do
+    before do
+      @matcher = SymbolRegexpMatcher.new(/abcd/)
     end
 
     describe "matches?" do
@@ -463,37 +485,6 @@ module Machete::Matchers
   describe StringRegexpMatcher do
     before :each do
       @matcher = StringRegexpMatcher.new(/abcd/)
-    end
-
-    describe "initialize" do
-      it "sets attributes correctly" do
-        @matcher.regexp.should == /abcd/
-      end
-    end
-
-    describe "==" do
-      it "returns true when passed the same object" do
-        @matcher.should == @matcher
-      end
-
-      it "returns true when passed a StartsWithMatcher initialized with the same parameters" do
-        @matcher.should == StringRegexpMatcher.new(/abcd/)
-      end
-
-      it "returns false when passed some random object" do
-        @matcher.should_not == Object.new
-      end
-
-      it "returns false when passed a subclass of StartsWithMatcher initialized with the same parameters" do
-        class SubclassedStringRegexpMatcher < StringRegexpMatcher
-        end
-
-        @matcher.should_not == SubclassedStringRegexpMatcher.new(/abcd/)
-      end
-
-      it "returns false when passed a StartsWithMatcher initialized with different parameters" do
-        @matcher.should_not == StringRegexpMatcher.new(/efgh/)
-      end
     end
 
     describe "matches?" do
