@@ -409,9 +409,11 @@ module Machete::Matchers
     end
   end
 
-  describe StringRegexpMatcher do
-    before :each do
-      @matcher = StringRegexpMatcher.new(/abcd/)
+  describe RegexpMatcher do
+    before do
+      @matcher = RegexpMatcher.new(/abcd/)
+      @object_true = stub(:=~ => true)
+      @object_false = stub(:=~ => false)
     end
 
     describe "initialize" do
@@ -426,7 +428,7 @@ module Machete::Matchers
       end
 
       it "returns true when passed a StartsWithMatcher initialized with the same parameters" do
-        @matcher.should == StringRegexpMatcher.new(/abcd/)
+        @matcher.should == RegexpMatcher.new(/abcd/)
       end
 
       it "returns false when passed some random object" do
@@ -434,15 +436,55 @@ module Machete::Matchers
       end
 
       it "returns false when passed a subclass of StartsWithMatcher initialized with the same parameters" do
-        class SubclassedStringRegexpMatcher < StringRegexpMatcher
+        class SubclassedRegexpMatcher < RegexpMatcher
         end
 
-        @matcher.should_not == SubclassedStringRegexpMatcher.new(/abcd/)
+        @matcher.should_not == SubclassedRegexpMatcher.new(/abcd/)
       end
 
       it "returns false when passed a StartsWithMatcher initialized with different parameters" do
-        @matcher.should_not == StringRegexpMatcher.new(/efgh/)
+        @matcher.should_not == RegexpMatcher.new(/efgh/)
       end
+    end
+
+    describe "matches?" do
+      it "matches a object matching the regexp" do
+        @matcher.matches?(@object_true).should be_true
+      end
+
+      it "does not match a object not matching the regexp" do
+        @matcher.matches?(@object_false).should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
+  describe SymbolRegexpMatcher do
+    before do
+      @matcher = SymbolRegexpMatcher.new(/abcd/)
+    end
+
+    describe "matches?" do
+      it "matches a string matching the regexp" do
+        @matcher.matches?(:efghabcdijkl).should be_true
+      end
+
+      it "does not match a string not matching the regexp" do
+        @matcher.matches?(:efghijkl).should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
+  describe StringRegexpMatcher do
+    before :each do
+      @matcher = StringRegexpMatcher.new(/abcd/)
     end
 
     describe "matches?" do
