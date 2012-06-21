@@ -420,6 +420,21 @@ module Machete
       ':a!'.should be_parsed_as(LiteralMatcher.new(:a!))
       ':a='.should be_parsed_as(LiteralMatcher.new(:a=))
 
+      # Instance vartiable name
+      ':@a'.should be_parsed_as(LiteralMatcher.new(:@a))
+      ':@z'.should be_parsed_as(LiteralMatcher.new(:@z))
+      ':@A'.should be_parsed_as(LiteralMatcher.new(:@A))
+      ':@Z'.should be_parsed_as(LiteralMatcher.new(:@Z))
+      ':@_'.should be_parsed_as(LiteralMatcher.new(:@_))
+      ':@aa'.should be_parsed_as(LiteralMatcher.new(:@aa))
+      ':@az'.should be_parsed_as(LiteralMatcher.new(:@az))
+      ':@aA'.should be_parsed_as(LiteralMatcher.new(:@aA))
+      ':@aZ'.should be_parsed_as(LiteralMatcher.new(:@aZ))
+      ':@a0'.should be_parsed_as(LiteralMatcher.new(:@a0))
+      ':@a9'.should be_parsed_as(LiteralMatcher.new(:@a9))
+      ':@a_'.should be_parsed_as(LiteralMatcher.new(:@a_))
+      ':@abcd'.should be_parsed_as(LiteralMatcher.new(:@abcd))
+
       # Operators (sorted alphabetically)
       ':%'.should be_parsed_as(LiteralMatcher.new(:%))
       ':&'.should be_parsed_as(LiteralMatcher.new(:&))

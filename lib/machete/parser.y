@@ -305,6 +305,9 @@ COMPLEX_TOKENS = [
         # regular method name
         [a-z_][a-zA-Z0-9_]*[?!=]?
         |
+        # instance variable name
+        @[a-zA-Z_][a-zA-Z0-9_]*
+        |
         # operator (sorted by length, then alphabetically)
         (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/<>^`|~])
       )
