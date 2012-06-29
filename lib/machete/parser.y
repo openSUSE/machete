@@ -11,6 +11,7 @@ token ODD
 token METHOD_NAME
 token CLASS_NAME
 token SYMBOL
+token REGEXP
 
 start expression
 
@@ -83,6 +84,13 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
            )
          }
        }
+     | method_name "*=" REGEXP {
+         result = {
+           val[0].to_sym => RegexpMatcher.new(
+             Regexp.new(regexp_value(val[2]))
+           )
+         }
+       }
 
 # Hack to overcome the fact that some tokens will lex as simple tokens, not
 # METHOD_NAME tokens, and that "reserved words" will lex as separate kinds of
@@ -133,6 +141,7 @@ quantifier : "*" { result = [0, nil, 1] }
 literal : SYMBOL  { result = LiteralMatcher.new(symbol_value(val[0]).to_sym) }
         | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
         | STRING  { result = LiteralMatcher.new(string_value(val[0])) }
+        | REGEXP  { result = LiteralMatcher.new(Regexp.new(regexp_value(val[0]))) }
         | TRUE	  { result = LiteralMatcher.new(true) }
         | FALSE   { result = LiteralMatcher.new(false) }
         | NIL     { result = LiteralMatcher.new(nil) }
@@ -196,6 +205,10 @@ end
 
 def symbol_value(value)
   value.to_s[1..-1]
+end
+
+def regexp_value(value)
+  value.to_s[1...-1]
 end
 
 # "^" needs to be here because if it were among operators recognized by
@@ -271,6 +284,25 @@ COMPLEX_TOKENS = [
           )*
         "
       )
+    /x
+  ],
+  [
+    :REGEXP,
+    /^
+      \/
+        (
+          \\                # escape
+          (
+            [\\"ntrfvaebs\/\(\)]    # one-character escape
+            |
+            [0-7]{1,3}        # octal number escape
+            |
+            x[0-9a-fA-F]{1,2} # hexadecimal number escape
+          )
+          |
+          [^\/]             # regular character
+        )*
+      \/
     /x
   ],
   # ANY, EVEN and ODD need to be before METHOD_NAME, otherwise they would be
