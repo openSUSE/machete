@@ -38,6 +38,14 @@ The `Machete.find` method finds all nodes in a Rubinius AST tree matching a patt
     #      #<Rubinius::AST::FixnumLiteral:0x10c0 @value=42 @line=1>
     #    ]
 
+    compiled_pattern = Machete::Parser.new.parse('FixnumLiteral')
+    Machete.find('42 + 43 + 44'.to_ast, compiled_pattern)
+    # => [
+    #      #<Rubinius::AST::FixnumLiteral:0x10b0 @value=44 @line=1>,
+    #      #<Rubinius::AST::FixnumLiteral:0x10b8 @value=43 @line=1>,
+    #      #<Rubinius::AST::FixnumLiteral:0x10c0 @value=42 @line=1>
+    #    ]
+
 Pattern Syntax
 --------------
 
