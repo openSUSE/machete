@@ -12,6 +12,10 @@ describe Machete do
   end
 
   describe "find" do
+    before do
+      @compiled_pattern = Machete::Parser.new.parse('FixnumLiteral')
+    end
+
     it "returns [] when no node matches the pattern" do
       Machete.find('"abcd"'.to_ast, 'FixnumLiteral').should == []
     end
@@ -34,6 +38,11 @@ describe Machete do
       nodes[1].value.should == 43
       nodes[2].should be_instance_of(Rubinius::AST::FixnumLiteral)
       nodes[2].value.should == 44
+    end
+
+    it "allows to pass compiled pattern" do
+      @compiled_pattern.should_receive(:matches?)
+      Machete.find('"abcd"'.to_ast, @compiled_pattern)
     end
   end
 end
