@@ -93,6 +93,25 @@ When matching string attributes values, you don't have to do a whole-string matc
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= "bc">') # => true
     Machete.matches?('"efgh"'.to_ast, 'StringLiteral<string *= "bc">') # => false
 
+#### Symbol Attributes
+
+Symbol attributes behave the same way as string attributes
+
+    Machete.matches?('ab()'.to_ast, 'SendWithArguments<string ^= :ab>') # => true
+    Machete.matches?('efgh()'.to_ast, 'SendWithArguments<name ^= :ab>') # => false
+    Machete.matches?('abcd()'.to_ast, 'SendWithArguments<name $= :cd>') # => true
+    Machete.matches?('efgh()'.to_ast, 'SendWithArguments<name $= :cd>') # => false
+    Machete.matches?('abcd()'.to_ast, 'SendWithArguments<name *= :bc>') # => true
+    Machete.matches?('efgh()'.to_ast, 'SendWithArguments<name *= :bc>') # => false
+
+#### Regexp attributes
+
+You can use pure ruby regular expression with `*=` operator. You need to close regexp between `//`
+
+    Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /ab/>') # => true
+    Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /^[0-9]{2}aab/>') # => false
+    Machete.matches?('"19aabcd"'.to_ast, 'StringLiteral<string *= /^[0-9]{2}aab/>') # => true
+
 #### Array Attributes
 
 When matching array attribute values, the simplest way is to specify the array elements exactly. They will be matched one-by-one.
