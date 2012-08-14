@@ -141,7 +141,7 @@ quantifier : "*" { result = [0, nil, 1] }
 literal : SYMBOL  { result = LiteralMatcher.new(symbol_value(val[0]).to_sym) }
         | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
         | STRING  { result = LiteralMatcher.new(string_value(val[0])) }
-        | REGEXP  { result = LiteralMatcher.new(Regexp.new(regexp_value(val[0]))) }
+        | REGEXP  { result = LiteralMatcher.new(regexp_value(val[0])) }
         | TRUE	  { result = LiteralMatcher.new(true) }
         | FALSE   { result = LiteralMatcher.new(false) }
         | NIL     { result = LiteralMatcher.new(nil) }
@@ -151,6 +151,12 @@ any : ANY { result = AnyMatcher.new }
 ---- inner
 
 include Matchers
+
+REGEXP_OPTIONS = {
+  'i' => ::Regexp::IGNORECASE,
+  'm' => ::Regexp::MULTILINE,
+  'x' => ::Regexp::EXTENDED
+}
 
 class SyntaxError < StandardError; end
 
@@ -208,8 +214,13 @@ def symbol_value(value)
 end
 
 def regexp_value(value)
-  value.to_s[1...-1]
+  /\A\/(.*)\/([^\/]*)\z/u =~ value
+  content = $1
+  inline_options = REGEXP_OPTIONS[$2]
+
+  Regexp.new(content, inline_options)
 end
+
 
 # "^" needs to be here because if it were among operators recognized by
 # METHOD_NAME, "^=" would be recognized as two tokens.
