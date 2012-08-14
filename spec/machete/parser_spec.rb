@@ -116,12 +116,15 @@ module Machete
           /abcd/
         ))
        )
+      'Foo<a *= /abcd/i>'.should be_parsed_as(
+         NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
+             /abcd/i
+         )))
       'Foo<a *= /a/, b *= /b/>'.should be_parsed_as(
         NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/a/),
                               :b => RegexpMatcher.new(/b/)
       ))
     end
-
     # Canonical method_name is "a".
     it "parses method_name" do
       'Foo<a = 42>'.should be_parsed_as(node_matcher_with_attr(:a))
