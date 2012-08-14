@@ -303,6 +303,7 @@ COMPLEX_TOKENS = [
           [^\/]             # regular character
         )*
       \/
+      [imxo]?
     /x
   ],
   # ANY, EVEN and ODD need to be before METHOD_NAME, otherwise they would be
