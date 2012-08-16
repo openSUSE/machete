@@ -3,3 +3,4 @@ doc/
 .yardoc
 *.rbc
 Gemfile.lock
+.rbenv-version
