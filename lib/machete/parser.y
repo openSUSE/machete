@@ -179,7 +179,7 @@ def integer_value(value)
   elsif value =~ /^0[xX]/
     value[2..-1].to_i(16)
   elsif value =~ /^0/
-    value[1..-1].to_i(8)
+    value.to_i(8)
   else
     value.to_i
   end
