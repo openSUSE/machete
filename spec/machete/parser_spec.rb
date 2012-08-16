@@ -116,6 +116,26 @@ module Machete
           /abcd/
         ))
        )
+      'Foo<a *= /abcd/i>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
+           /abcd/i
+        )))
+      'Foo<a *= /abcd/m>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
+            /abcd/m
+        )))
+      'Foo<a *= /abcd/x>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
+            /abcd/x
+        )))
+      'Foo<a *= /abcd/ix>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
+            /abcd/ix
+        )))
+      'Foo<a *= /abcd/imx>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
+            /abcd/imx
+        )))
       'Foo<a *= /a/, b *= /b/>'.should be_parsed_as(
         NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/a/),
                               :b => RegexpMatcher.new(/b/)

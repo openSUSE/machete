@@ -112,6 +112,11 @@ You can use pure ruby regular expression with `*=` operator. You need to close r
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /^[0-9]{2}aab/>') # => false
     Machete.matches?('"19aabcd"'.to_ast, 'StringLiteral<string *= /^[0-9]{2}aab/>') # => true
 
+Machete support also regexp with additional options (for example case sensitive).
+
+    Machete.matches?('"AB"'.to_ast, 'StringLiteral<string *= /ab/>') # => false
+    Machete.matches?('"AB"'.to_ast, 'StringLiteral<string *= /ab/i>') # => true
+
 #### Array Attributes
 
 When matching array attribute values, the simplest way is to specify the array elements exactly. They will be matched one-by-one.
