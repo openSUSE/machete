@@ -216,11 +216,16 @@ end
 def regexp_value(value)
   /\A\/(.*)\/([^\/]*)\z/u =~ value
   content = $1
-  inline_options = REGEXP_OPTIONS[$2]
+  inline_options = $2
+  options = nil
 
-  Regexp.new(content, inline_options)
+  if inline_options
+    options = inline_options.split(//).map { |opt| REGEXP_OPTIONS[opt] }
+    options = options.inject(&:+)
+  end
+
+  Regexp.new(content, options)
 end
-
 
 # "^" needs to be here because if it were among operators recognized by
 # METHOD_NAME, "^=" would be recognized as two tokens.
@@ -314,7 +319,7 @@ COMPLEX_TOKENS = [
           [^\/]             # regular character
         )*
       \/
-      [imxo]?
+      [imx]*
     /x
   ],
   # ANY, EVEN and ODD need to be before METHOD_NAME, otherwise they would be
