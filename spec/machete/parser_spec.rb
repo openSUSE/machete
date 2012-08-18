@@ -72,15 +72,30 @@ module Machete
 
     # Canonical attr is "a = 42".
     it "parses attr" do
+      # Expressions
       'Foo<a = 42 | 43>'.should be_parsed_as(NodeMatcher.new(:Foo, :a => @ch4243))
 
-      'Foo<a ^= :symbol>'.should be_parsed_as(
-                                     NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/^symbol/) ))
-      'Foo<a $= :symbol>'.should be_parsed_as(
-                                     NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/symbol$/) ))
-      'Foo<a *= :symbol>'.should be_parsed_as(
-                                     NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/symbol/) ))
+      # Symbols
+      'Foo<a ^= :a>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/^a/))
+      )
+      'Foo<a ^= :+>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/^\+/))
+      )
+      'Foo<a $= :a>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/a$/))
+      )
+      'Foo<a $= :+>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/\+$/))
+      )
+      'Foo<a *= :a>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/a/))
+      )
+      'Foo<a *= :+>'.should be_parsed_as(
+        NodeMatcher.new(:Foo, :a => SymbolRegexpMatcher.new(/\+/))
+      )
 
+      # Strings
       'Foo<a ^= "abcd">'.should be_parsed_as(
         NodeMatcher.new(:Foo, :a => StringRegexpMatcher.new(/^abcd/))
       )
@@ -106,40 +121,22 @@ module Machete
         ))
       )
 
-      'Foo<a *= /a/>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
-          /a/
-        ))
-      )
+      # Regexps
       'Foo<a *= /abcd/>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
-          /abcd/
-        ))
-       )
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/abcd/))
+      )
       'Foo<a *= /abcd/i>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
-           /abcd/i
-        )))
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/abcd/i))
+      )
       'Foo<a *= /abcd/m>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
-            /abcd/m
-        )))
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/abcd/m))
+      )
       'Foo<a *= /abcd/x>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
-            /abcd/x
-        )))
-      'Foo<a *= /abcd/ix>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
-            /abcd/ix
-        )))
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/abcd/x))
+      )
       'Foo<a *= /abcd/imx>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(
-            /abcd/imx
-        )))
-      'Foo<a *= /a/, b *= /b/>'.should be_parsed_as(
-        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/a/),
-                              :b => RegexpMatcher.new(/b/)
-      ))
+        NodeMatcher.new(:Foo, :a => RegexpMatcher.new(/abcd/imx))
+      )
     end
 
     # Canonical method_name is "a".
