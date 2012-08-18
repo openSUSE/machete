@@ -319,16 +319,16 @@ COMPLEX_TOKENS = [
     /^
       \/
         (
-          \\                # escape
+          \\                                          # escape
           (
-            [\\"ntrfvaebs\/\(\)]    # one-character escape
+            [\\\/ntrfvaebs\(\)\[\]\{\}\-\.\?\*\+\|\^\$] # one-character escape
             |
-            [0-7]{1,3}        # octal number escape
+            [0-7]{2,3}                                  # octal number escape
             |
-            x[0-9a-fA-F]{1,2} # hexadecimal number escape
+            x[0-9a-fA-F]{1,2}                           # hexadecimal number escape
           )
           |
-          [^\/]             # regular character
+          [^\/]                                       # regular character
         )*
       \/
       [imx]*
