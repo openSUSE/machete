@@ -429,7 +429,7 @@ module Machete::Matchers
         @matcher.should == @matcher
       end
 
-      it "returns true when passed a StartsWithMatcher initialized with the same parameters" do
+      it "returns true when passed a RegexpMatcher initialized with the same parameters" do
         @matcher.should == RegexpMatcher.new(/abcd/)
       end
 
@@ -437,14 +437,14 @@ module Machete::Matchers
         @matcher.should_not == Object.new
       end
 
-      it "returns false when passed a subclass of StartsWithMatcher initialized with the same parameters" do
+      it "returns false when passed a subclass of RegexpMatcher initialized with the same parameters" do
         class SubclassedRegexpMatcher < RegexpMatcher
         end
 
         @matcher.should_not == SubclassedRegexpMatcher.new(/abcd/)
       end
 
-      it "returns false when passed a StartsWithMatcher initialized with different parameters" do
+      it "returns false when passed a RegexpMatcher initialized with different parameters" do
         @matcher.should_not == RegexpMatcher.new(/efgh/)
       end
     end
