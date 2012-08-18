@@ -13,36 +13,41 @@ describe Machete do
 
   describe "find" do
     before do
-      @compiled_pattern = Machete::Parser.new.parse('FixnumLiteral')
+      # The same pattern in a string form and a compiled form.
+      @patterns = [
+        'FixnumLiteral',
+        Machete::Matchers::NodeMatcher.new("FixnumLiteral")
+      ]
     end
 
     it "returns [] when no node matches the pattern" do
-      Machete.find('"abcd"'.to_ast, 'FixnumLiteral').should == []
+      @patterns.each do |pattern|
+        Machete.find('"abcd"'.to_ast, pattern).should == []
+      end
     end
 
     it "returns root node if it matches the pattern" do
-      nodes = Machete.find('42'.to_ast, 'FixnumLiteral')
+      @patterns.each do |pattern|
+        nodes = Machete.find('42'.to_ast, pattern)
 
-      nodes.size.should == 1
-      nodes[0].should be_instance_of(Rubinius::AST::FixnumLiteral)
-      nodes[0].value.should == 42
+        nodes.size.should == 1
+        nodes[0].should be_instance_of(Rubinius::AST::FixnumLiteral)
+        nodes[0].value.should == 42
+      end
     end
 
     it "returns child nodes if they match the pattern" do
-      nodes = Machete.find('42 + 43 + 44'.to_ast, 'FixnumLiteral').sort_by(&:value)
+      @patterns.each do |pattern|
+        nodes = Machete.find('42 + 43 + 44'.to_ast, pattern).sort_by(&:value)
 
-      nodes.size.should == 3
-      nodes[0].should be_instance_of(Rubinius::AST::FixnumLiteral)
-      nodes[0].value.should == 42
-      nodes[1].should be_instance_of(Rubinius::AST::FixnumLiteral)
-      nodes[1].value.should == 43
-      nodes[2].should be_instance_of(Rubinius::AST::FixnumLiteral)
-      nodes[2].value.should == 44
-    end
-
-    it "allows to pass compiled pattern" do
-      @compiled_pattern.should_receive(:matches?)
-      Machete.find('"abcd"'.to_ast, @compiled_pattern)
+        nodes.size.should == 3
+        nodes[0].should be_instance_of(Rubinius::AST::FixnumLiteral)
+        nodes[0].value.should == 42
+        nodes[1].should be_instance_of(Rubinius::AST::FixnumLiteral)
+        nodes[1].value.should == 43
+        nodes[2].should be_instance_of(Rubinius::AST::FixnumLiteral)
+        nodes[2].value.should == 44
+      end
     end
   end
 end
