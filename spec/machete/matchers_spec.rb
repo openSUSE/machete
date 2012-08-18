@@ -416,8 +416,6 @@ module Machete::Matchers
   describe RegexpMatcher do
     before do
       @matcher = RegexpMatcher.new(/abcd/)
-      @object_true = stub(:=~ => true)
-      @object_false = stub(:=~ => false)
     end
 
     describe "initialize" do
@@ -448,20 +446,6 @@ module Machete::Matchers
 
       it "returns false when passed a StartsWithMatcher initialized with different parameters" do
         @matcher.should_not == RegexpMatcher.new(/efgh/)
-      end
-    end
-
-    describe "matches?" do
-      it "matches a object matching the regexp" do
-        @matcher.matches?(@object_true).should be_true
-      end
-
-      it "does not match a object not matching the regexp" do
-        @matcher.matches?(@object_false).should be_false
-      end
-
-      it "does not match some random object" do
-        @matcher.matches?(Object.new).should be_false
       end
     end
   end

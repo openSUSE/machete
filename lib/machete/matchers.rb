@@ -143,10 +143,6 @@ module Machete
       def ==(other)
         other.instance_of?(self.class) && @regexp == other.regexp
       end
-
-      def matches?(node)
-        node =~ @regexp
-      end
     end
 
     class SymbolRegexpMatcher < RegexpMatcher
