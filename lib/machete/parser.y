@@ -186,7 +186,7 @@ def integer_value(value)
 end
 
 def symbol_value(value)
-  value.to_s[1..-1].to_sym
+  value[1..-1].to_sym
 end
 
 def string_value(value)
