@@ -152,12 +152,6 @@ any : ANY { result = AnyMatcher.new }
 
 include Matchers
 
-REGEXP_OPTIONS = {
-  'i' => Regexp::IGNORECASE,
-  'm' => Regexp::MULTILINE,
-  'x' => Regexp::EXTENDED
-}
-
 class SyntaxError < StandardError; end
 
 def parse(input)
@@ -212,6 +206,12 @@ def string_value(value)
     raise "Unknown quote: #{quote.inspect}."
   end
 end
+
+REGEXP_OPTIONS = {
+  'i' => Regexp::IGNORECASE,
+  'm' => Regexp::MULTILINE,
+  'x' => Regexp::EXTENDED
+}
 
 def regexp_value(value)
   /\A\/(.*)\/([imx]*)\z/ =~ value
