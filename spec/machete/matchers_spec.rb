@@ -456,11 +456,11 @@ module Machete::Matchers
     end
 
     describe "matches?" do
-      it "matches a string matching the regexp" do
+      it "matches a symbol matching the regexp" do
         @matcher.matches?(:efghabcdijkl).should be_true
       end
 
-      it "does not match a string not matching the regexp" do
+      it "does not match a symbol not matching the regexp" do
         @matcher.matches?(:efghijkl).should be_false
       end
 
@@ -496,11 +496,11 @@ module Machete::Matchers
     end
 
     describe "matches?" do
-      it "matches a string matching the regexp" do
+      it "matches a symbol matching the regexp" do
         @matcher.matches?(:efghabcdijkl).should be_true
       end
 
-      it "does not match a string not matching the regexp" do
+      it "does not match a symbol not matching the regexp" do
         @matcher.matches?(:efghijkl).should be_false
       end
 
