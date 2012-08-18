@@ -49,6 +49,10 @@ module Machete::Matchers
     end
   end
 
+  describe Matcher do
+    # Nothing to spec.
+  end
+
   describe ChoiceMatcher do
     before :each do
       @alternatives = [

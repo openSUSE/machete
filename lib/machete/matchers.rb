@@ -17,7 +17,10 @@ module Machete
       end
     end
 
-    class ChoiceMatcher
+    class Matcher
+    end
+
+    class ChoiceMatcher < Matcher
       attr_reader :alternatives
 
       def initialize(alternatives)
@@ -33,7 +36,7 @@ module Machete
       end
     end
 
-    class NodeMatcher
+    class NodeMatcher < Matcher
       attr_reader :class_name, :attrs
 
       def initialize(class_name, attrs = {})
@@ -52,7 +55,7 @@ module Machete
       end
     end
 
-    class ArrayMatcher
+    class ArrayMatcher < Matcher
       attr_reader :items
 
       def initialize(items)
@@ -114,7 +117,7 @@ module Machete
       end
     end
 
-    class LiteralMatcher
+    class LiteralMatcher < Matcher
       attr_reader :literal
 
       def initialize(literal)
@@ -130,7 +133,7 @@ module Machete
       end
     end
 
-    class RegexpMatcher
+    class RegexpMatcher < Matcher
       attr_reader :regexp
 
       def initialize(regexp)
@@ -158,7 +161,7 @@ module Machete
       end
     end
 
-    class AnyMatcher
+    class AnyMatcher < Matcher
       def ==(other)
         other.instance_of?(self.class)
       end
