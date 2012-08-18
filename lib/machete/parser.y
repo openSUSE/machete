@@ -153,9 +153,9 @@ any : ANY { result = AnyMatcher.new }
 include Matchers
 
 REGEXP_OPTIONS = {
-  'i' => ::Regexp::IGNORECASE,
-  'm' => ::Regexp::MULTILINE,
-  'x' => ::Regexp::EXTENDED
+  'i' => Regexp::IGNORECASE,
+  'm' => Regexp::MULTILINE,
+  'x' => Regexp::EXTENDED
 }
 
 class SyntaxError < StandardError; end
