@@ -215,6 +215,7 @@ module Machete
       '42'.should be_parsed_as(@i42)
       ':a'.should be_parsed_as(LiteralMatcher.new(:a))
       '"abcd"'.should be_parsed_as(LiteralMatcher.new("abcd"))
+      '/abcd/'.should be_parsed_as(LiteralMatcher.new(/abcd/))
     end
 
     # Canonical any is "any".
