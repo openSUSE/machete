@@ -1,7 +1,5 @@
 module Machete
-  # @private
   module Matchers
-    # @private
     class Quantifier
       # :min should be always set, :max can be nil (meaning infinity)
       attr_reader :matcher, :min, :max, :step
@@ -19,7 +17,6 @@ module Machete
       end
     end
 
-    # @private
     class ChoiceMatcher
       attr_reader :alternatives
 
@@ -36,7 +33,6 @@ module Machete
       end
     end
 
-    # @private
     class NodeMatcher
       attr_reader :class_name, :attrs
 
@@ -56,7 +52,6 @@ module Machete
       end
     end
 
-    # @private
     class ArrayMatcher
       attr_reader :items
 
@@ -119,7 +114,6 @@ module Machete
       end
     end
 
-    # @private
     class LiteralMatcher
       attr_reader :literal
 
@@ -136,7 +130,6 @@ module Machete
       end
     end
 
-    # @private
     class RegexpMatcher
       attr_reader :regexp
 
@@ -153,21 +146,18 @@ module Machete
       end
     end
 
-    # @private
     class SymbolRegexpMatcher < RegexpMatcher
       def matches?(node)
         node.is_a?(Symbol) && node.to_s =~ @regexp
       end
     end
 
-    # @private
     class StringRegexpMatcher < RegexpMatcher
       def matches?(node)
         node.is_a?(String) && node =~ @regexp
       end
     end
 
-    # @private
     class AnyMatcher
       def ==(other)
         other.instance_of?(self.class)
