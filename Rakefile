@@ -6,7 +6,7 @@ task :parser do
   source = "lib/machete/parser.y"
   target = "lib/machete/parser.rb"
   unless uptodate?(target, [source])
-    system "racc -o #{target} #{source}" or exit 1
+    sh "racc -o #{target} #{source}"
   end
 end
 
