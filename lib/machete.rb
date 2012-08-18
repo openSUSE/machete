@@ -21,7 +21,7 @@ module Machete
     #
     # @raise [Matchete::Parser::SyntaxError] if the pattern is invalid
     def matches?(node, pattern)
-      Parser.new.parse(pattern).matches?(node)
+      compiled_pattern(pattern).matches?(node)
     end
 
     # Finds all nodes in a Rubinius AST matching a pattern.
@@ -49,11 +49,7 @@ module Machete
     #
     # @raise [Matchete::Parser::SyntaxError] if the pattern is invalid
     def find(ast, pattern)
-      if pattern.is_a? String
-        matcher = Parser.new.parse(pattern)
-      else
-        matcher = pattern
-      end
+      matcher = compiled_pattern(pattern)
 
       result = []
       result << ast if matcher.matches?(ast)
@@ -64,6 +60,16 @@ module Machete
       end
 
       result
+    end
+
+    private
+
+    def compiled_pattern(pattern)
+      if pattern.is_a?(String)
+        Parser.new.parse(pattern)
+      else
+        pattern
+      end
     end
   end
 end
