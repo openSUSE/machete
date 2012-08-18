@@ -157,6 +157,13 @@ module Machete
       end
     end
 
+    class IndifferentRegexpMatcher < RegexpMatcher
+      def matches?(node)
+        (node.is_a?(Symbol) && node.to_s =~ @regexp) ||
+        (node.is_a?(String) && node =~ @regexp)
+      end
+    end
+
     class AnyMatcher < Matcher
       def ==(other)
         other.instance_of?(self.class)

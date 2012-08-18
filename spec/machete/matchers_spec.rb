@@ -490,6 +490,34 @@ module Machete::Matchers
     end
   end
 
+  describe IndifferentRegexpMatcher do
+    before :each do
+      @matcher = IndifferentRegexpMatcher.new(/abcd/)
+    end
+
+    describe "matches?" do
+      it "matches a string matching the regexp" do
+        @matcher.matches?(:efghabcdijkl).should be_true
+      end
+
+      it "does not match a string not matching the regexp" do
+        @matcher.matches?(:efghijkl).should be_false
+      end
+
+      it "matches a string matching the regexp" do
+        @matcher.matches?("efghabcdijkl").should be_true
+      end
+
+      it "does not match a string not matching the regexp" do
+        @matcher.matches?("efghijkl").should be_false
+      end
+
+      it "does not match some random object" do
+        @matcher.matches?(Object.new).should be_false
+      end
+    end
+  end
+
   describe AnyMatcher do
     before :each do
       @matcher = AnyMatcher.new

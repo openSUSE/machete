@@ -86,7 +86,7 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
        }
      | method_name "*=" REGEXP {
          result = {
-           val[0].to_sym => RegexpMatcher.new(
+           val[0].to_sym => IndifferentRegexpMatcher.new(
              Regexp.new(regexp_value(val[2]))
            )
          }
