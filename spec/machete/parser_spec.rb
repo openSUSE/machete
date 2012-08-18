@@ -209,17 +209,22 @@ module Machete
 
     # Canonical literal is "42".
     it "parses literal" do
-      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
-      '42'.should be_parsed_as(@i42)
-      '"abcd"'.should be_parsed_as(LiteralMatcher.new("abcd"))
+      'nil'.should be_parsed_as(LiteralMatcher.new(nil))
       'true'.should be_parsed_as(LiteralMatcher.new(true))
       'false'.should be_parsed_as(LiteralMatcher.new(false))
-      'nil'.should be_parsed_as(LiteralMatcher.new(nil))
+      '42'.should be_parsed_as(@i42)
+      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
+      '"abcd"'.should be_parsed_as(LiteralMatcher.new("abcd"))
     end
 
     # Canonical any is "any".
     it "parses any" do
       'any'.should be_parsed_as(AnyMatcher.new)
+    end
+
+    # Canonical NIL is "nil".
+    it "parses NIL" do
+      'nil'.should be_parsed_as(LiteralMatcher.new(nil))
     end
 
     # Canonical TRUE is "true".
@@ -230,11 +235,6 @@ module Machete
     # Canonical FALSE is "false".
     it "parses FALSE" do
       'false'.should be_parsed_as(LiteralMatcher.new(false))
-    end
-
-    # Canonical NIL is "nil".
-    it "parses NIL" do
-      'nil'.should be_parsed_as(LiteralMatcher.new(nil))
     end
 
     # Canonical INTEGER is "42".
@@ -316,6 +316,79 @@ module Machete
       '1_9'.should be_parsed_as(LiteralMatcher.new(19))
       '1_123'.should be_parsed_as(LiteralMatcher.new(1123))
       '1_2_3_4'.should be_parsed_as(LiteralMatcher.new(1234))
+    end
+
+    # Canonical SYMBOL is ":a".
+    it "parses SYMBOL" do
+      # Class names
+      ':A'.should be_parsed_as(LiteralMatcher.new(:A))
+      ':Z'.should be_parsed_as(LiteralMatcher.new(:Z))
+      ':Aa'.should be_parsed_as(LiteralMatcher.new(:Aa))
+      ':Az'.should be_parsed_as(LiteralMatcher.new(:Az))
+      ':AA'.should be_parsed_as(LiteralMatcher.new(:AA))
+      ':AZ'.should be_parsed_as(LiteralMatcher.new(:AZ))
+      ':A0'.should be_parsed_as(LiteralMatcher.new(:A0))
+      ':A9'.should be_parsed_as(LiteralMatcher.new(:A9))
+      ':A_'.should be_parsed_as(LiteralMatcher.new(:A_))
+      ':Abcd'.should be_parsed_as(LiteralMatcher.new(:Abcd))
+
+      # Regular method names
+      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
+      ':z'.should be_parsed_as(LiteralMatcher.new(:z))
+      ':_'.should be_parsed_as(LiteralMatcher.new(:_))
+      ':aa'.should be_parsed_as(LiteralMatcher.new(:aa))
+      ':az'.should be_parsed_as(LiteralMatcher.new(:az))
+      ':aA'.should be_parsed_as(LiteralMatcher.new(:aA))
+      ':aZ'.should be_parsed_as(LiteralMatcher.new(:aZ))
+      ':a0'.should be_parsed_as(LiteralMatcher.new(:a0))
+      ':a9'.should be_parsed_as(LiteralMatcher.new(:a9))
+      ':a_'.should be_parsed_as(LiteralMatcher.new(:a_))
+      ':abcd'.should be_parsed_as(LiteralMatcher.new(:abcd))
+      ':a?'.should be_parsed_as(LiteralMatcher.new(:a?))
+      ':a!'.should be_parsed_as(LiteralMatcher.new(:a!))
+      ':a='.should be_parsed_as(LiteralMatcher.new(:a=))
+
+      # Instance vartiable name
+      ':@a'.should be_parsed_as(LiteralMatcher.new(:@a))
+      ':@z'.should be_parsed_as(LiteralMatcher.new(:@z))
+      ':@A'.should be_parsed_as(LiteralMatcher.new(:@A))
+      ':@Z'.should be_parsed_as(LiteralMatcher.new(:@Z))
+      ':@_'.should be_parsed_as(LiteralMatcher.new(:@_))
+      ':@aa'.should be_parsed_as(LiteralMatcher.new(:@aa))
+      ':@az'.should be_parsed_as(LiteralMatcher.new(:@az))
+      ':@aA'.should be_parsed_as(LiteralMatcher.new(:@aA))
+      ':@aZ'.should be_parsed_as(LiteralMatcher.new(:@aZ))
+      ':@a0'.should be_parsed_as(LiteralMatcher.new(:@a0))
+      ':@a9'.should be_parsed_as(LiteralMatcher.new(:@a9))
+      ':@a_'.should be_parsed_as(LiteralMatcher.new(:@a_))
+      ':@abcd'.should be_parsed_as(LiteralMatcher.new(:@abcd))
+
+      # Operators (sorted alphabetically)
+      ':%'.should be_parsed_as(LiteralMatcher.new(:%))
+      ':&'.should be_parsed_as(LiteralMatcher.new(:&))
+      ':*'.should be_parsed_as(LiteralMatcher.new(:*))
+      ':**'.should be_parsed_as(LiteralMatcher.new(:**))
+      ':+'.should be_parsed_as(LiteralMatcher.new(:+))
+      ':+@'.should be_parsed_as(LiteralMatcher.new(:+@))
+      ':-'.should be_parsed_as(LiteralMatcher.new(:-))
+      ':-@'.should be_parsed_as(LiteralMatcher.new(:-@))
+      ':/'.should be_parsed_as(LiteralMatcher.new(:/))
+      ':<'.should be_parsed_as(LiteralMatcher.new(:<))
+      ':<<'.should be_parsed_as(LiteralMatcher.new(:<<))
+      ':<='.should be_parsed_as(LiteralMatcher.new(:<=))
+      ':<=>'.should be_parsed_as(LiteralMatcher.new(:<=>))
+      ':=='.should be_parsed_as(LiteralMatcher.new(:==))
+      ':==='.should be_parsed_as(LiteralMatcher.new(:===))
+      ':=~'.should be_parsed_as(LiteralMatcher.new(:=~))
+      ':>'.should be_parsed_as(LiteralMatcher.new(:>))
+      ':>='.should be_parsed_as(LiteralMatcher.new(:>=))
+      ':>>'.should be_parsed_as(LiteralMatcher.new(:>>))
+      ':[]'.should be_parsed_as(LiteralMatcher.new(:[]))
+      ':[]='.should be_parsed_as(LiteralMatcher.new(:[]=))
+      ':^'.should be_parsed_as(LiteralMatcher.new(:^))
+      ':`'.should be_parsed_as(LiteralMatcher.new(:`))
+      ':|'.should be_parsed_as(LiteralMatcher.new(:|))
+      ':~'.should be_parsed_as(LiteralMatcher.new(:~))
     end
 
     # Canonical STRING is "\"abcd\"".
@@ -437,79 +510,6 @@ module Machete
       'A9'.should be_parsed_as(NodeMatcher.new(:A9))
       'A_'.should be_parsed_as(NodeMatcher.new(:A_))
       'Abcd'.should be_parsed_as(NodeMatcher.new(:Abcd))
-    end
-
-    # Canonical SYMBOL is ":a".
-    it "parses SYMBOL" do
-      # Class names
-      ':A'.should be_parsed_as(LiteralMatcher.new(:A))
-      ':Z'.should be_parsed_as(LiteralMatcher.new(:Z))
-      ':Aa'.should be_parsed_as(LiteralMatcher.new(:Aa))
-      ':Az'.should be_parsed_as(LiteralMatcher.new(:Az))
-      ':AA'.should be_parsed_as(LiteralMatcher.new(:AA))
-      ':AZ'.should be_parsed_as(LiteralMatcher.new(:AZ))
-      ':A0'.should be_parsed_as(LiteralMatcher.new(:A0))
-      ':A9'.should be_parsed_as(LiteralMatcher.new(:A9))
-      ':A_'.should be_parsed_as(LiteralMatcher.new(:A_))
-      ':Abcd'.should be_parsed_as(LiteralMatcher.new(:Abcd))
-
-      # Regular method names
-      ':a'.should be_parsed_as(LiteralMatcher.new(:a))
-      ':z'.should be_parsed_as(LiteralMatcher.new(:z))
-      ':_'.should be_parsed_as(LiteralMatcher.new(:_))
-      ':aa'.should be_parsed_as(LiteralMatcher.new(:aa))
-      ':az'.should be_parsed_as(LiteralMatcher.new(:az))
-      ':aA'.should be_parsed_as(LiteralMatcher.new(:aA))
-      ':aZ'.should be_parsed_as(LiteralMatcher.new(:aZ))
-      ':a0'.should be_parsed_as(LiteralMatcher.new(:a0))
-      ':a9'.should be_parsed_as(LiteralMatcher.new(:a9))
-      ':a_'.should be_parsed_as(LiteralMatcher.new(:a_))
-      ':abcd'.should be_parsed_as(LiteralMatcher.new(:abcd))
-      ':a?'.should be_parsed_as(LiteralMatcher.new(:a?))
-      ':a!'.should be_parsed_as(LiteralMatcher.new(:a!))
-      ':a='.should be_parsed_as(LiteralMatcher.new(:a=))
-
-      # Instance vartiable name
-      ':@a'.should be_parsed_as(LiteralMatcher.new(:@a))
-      ':@z'.should be_parsed_as(LiteralMatcher.new(:@z))
-      ':@A'.should be_parsed_as(LiteralMatcher.new(:@A))
-      ':@Z'.should be_parsed_as(LiteralMatcher.new(:@Z))
-      ':@_'.should be_parsed_as(LiteralMatcher.new(:@_))
-      ':@aa'.should be_parsed_as(LiteralMatcher.new(:@aa))
-      ':@az'.should be_parsed_as(LiteralMatcher.new(:@az))
-      ':@aA'.should be_parsed_as(LiteralMatcher.new(:@aA))
-      ':@aZ'.should be_parsed_as(LiteralMatcher.new(:@aZ))
-      ':@a0'.should be_parsed_as(LiteralMatcher.new(:@a0))
-      ':@a9'.should be_parsed_as(LiteralMatcher.new(:@a9))
-      ':@a_'.should be_parsed_as(LiteralMatcher.new(:@a_))
-      ':@abcd'.should be_parsed_as(LiteralMatcher.new(:@abcd))
-
-      # Operators (sorted alphabetically)
-      ':%'.should be_parsed_as(LiteralMatcher.new(:%))
-      ':&'.should be_parsed_as(LiteralMatcher.new(:&))
-      ':*'.should be_parsed_as(LiteralMatcher.new(:*))
-      ':**'.should be_parsed_as(LiteralMatcher.new(:**))
-      ':+'.should be_parsed_as(LiteralMatcher.new(:+))
-      ':+@'.should be_parsed_as(LiteralMatcher.new(:+@))
-      ':-'.should be_parsed_as(LiteralMatcher.new(:-))
-      ':-@'.should be_parsed_as(LiteralMatcher.new(:-@))
-      ':/'.should be_parsed_as(LiteralMatcher.new(:/))
-      ':<'.should be_parsed_as(LiteralMatcher.new(:<))
-      ':<<'.should be_parsed_as(LiteralMatcher.new(:<<))
-      ':<='.should be_parsed_as(LiteralMatcher.new(:<=))
-      ':<=>'.should be_parsed_as(LiteralMatcher.new(:<=>))
-      ':=='.should be_parsed_as(LiteralMatcher.new(:==))
-      ':==='.should be_parsed_as(LiteralMatcher.new(:===))
-      ':=~'.should be_parsed_as(LiteralMatcher.new(:=~))
-      ':>'.should be_parsed_as(LiteralMatcher.new(:>))
-      ':>='.should be_parsed_as(LiteralMatcher.new(:>=))
-      ':>>'.should be_parsed_as(LiteralMatcher.new(:>>))
-      ':[]'.should be_parsed_as(LiteralMatcher.new(:[]))
-      ':[]='.should be_parsed_as(LiteralMatcher.new(:[]=))
-      ':^'.should be_parsed_as(LiteralMatcher.new(:^))
-      ':`'.should be_parsed_as(LiteralMatcher.new(:`))
-      ':|'.should be_parsed_as(LiteralMatcher.new(:|))
-      ':~'.should be_parsed_as(LiteralMatcher.new(:~))
     end
 
     it "skips whitespace before tokens" do

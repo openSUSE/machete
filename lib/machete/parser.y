@@ -1,17 +1,17 @@
 class Machete::Parser
 
+token NIL
 token TRUE
 token FALSE
-token NIL
 token INTEGER
+token SYMBOL
 token STRING
+token REGEXP
 token ANY
 token EVEN
 token ODD
 token METHOD_NAME
 token CLASS_NAME
-token SYMBOL
-token REGEXP
 
 start expression
 
@@ -96,9 +96,9 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
 # METHOD_NAME tokens, and that "reserved words" will lex as separate kinds of
 # tokens.
 method_name : METHOD_NAME
+            | NIL
             | TRUE
             | FALSE
-            | NIL
             | ANY
             | EVEN
             | ODD
@@ -138,13 +138,13 @@ quantifier : "*" { result = [0, nil, 1] }
            | "{" EVEN "}" { result = [0, nil, 2] }
            | "{" ODD "}"  { result = [1, nil, 2] }
 
-literal : SYMBOL  { result = LiteralMatcher.new(symbol_value(val[0]).to_sym) }
+literal : NIL     { result = LiteralMatcher.new(nil) }
+        | TRUE    { result = LiteralMatcher.new(true) }
+        | FALSE   { result = LiteralMatcher.new(false) }
         | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
+        | SYMBOL  { result = LiteralMatcher.new(symbol_value(val[0]).to_sym) }
         | STRING  { result = LiteralMatcher.new(string_value(val[0])) }
         | REGEXP  { result = LiteralMatcher.new(regexp_value(val[0])) }
-        | TRUE	  { result = LiteralMatcher.new(true) }
-        | FALSE   { result = LiteralMatcher.new(false) }
-        | NIL     { result = LiteralMatcher.new(nil) }
 
 any : ANY { result = AnyMatcher.new }
 
@@ -185,6 +185,10 @@ def integer_value(value)
   end
 end
 
+def symbol_value(value)
+  value.to_s[1..-1]
+end
+
 def string_value(value)
   quote = value[0..0]
   if quote == "'"
@@ -207,10 +211,6 @@ def string_value(value)
   else
     raise "Unknown quote: #{quote.inspect}."
   end
-end
-
-def symbol_value(value)
-  value.to_s[1..-1]
 end
 
 def regexp_value(value)
@@ -249,9 +249,9 @@ SIMPLE_TOKENS = [
 ]
 
 COMPLEX_TOKENS = [
+  [:NIL,   /^nil/],
   [:TRUE,  /^true/],
   [:FALSE, /^false/],
-  [:NIL,   /^nil/],
   # INTEGER needs to be before METHOD_NAME, otherwise e.g. "+1" would be
   # recognized as two tokens.
   [
@@ -270,6 +270,25 @@ COMPLEX_TOKENS = [
         0[0-7]*(_[0-7]+)*                 # octal (unprefixed)
         |
         [1-9]\d*(_\d+)*                   # decimal (unprefixed)
+      )
+    /x
+  ],
+  [
+    :SYMBOL,
+    /^
+      :
+      (
+        # class name
+        [A-Z][a-zA-Z0-9_]*
+        |
+        # regular method name
+        [a-z_][a-zA-Z0-9_]*[?!=]?
+        |
+        # instance variable name
+        @[a-zA-Z_][a-zA-Z0-9_]*
+        |
+        # operator (sorted by length, then alphabetically)
+        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/<>^`|~])
       )
     /x
   ],
@@ -342,26 +361,7 @@ COMPLEX_TOKENS = [
       )
     /x
   ],
-  [:CLASS_NAME,  /^[A-Z][a-zA-Z0-9_]*/],
-  [
-    :SYMBOL,
-    /^
-      :
-      (
-        # class name
-        [A-Z][a-zA-Z0-9_]*
-        |
-        # regular method name
-        [a-z_][a-zA-Z0-9_]*[?!=]?
-        |
-        # instance variable name
-        @[a-zA-Z_][a-zA-Z0-9_]*
-        |
-        # operator (sorted by length, then alphabetically)
-        (<=>|===|\[\]=|\*\*|\+@|-@|<<|<=|==|=~|>=|>>|\[\]|[%&*+\-\/<>^`|~])
-      )
-    /x
-  ]
+  [:CLASS_NAME,  /^[A-Z][a-zA-Z0-9_]*/]
 ]
 
 def next_token
