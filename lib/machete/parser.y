@@ -361,7 +361,7 @@ COMPLEX_TOKENS = [
       )
     /x
   ],
-  [:CLASS_NAME,  /^[A-Z][a-zA-Z0-9_]*/]
+  [:CLASS_NAME, /^[A-Z][a-zA-Z0-9_]*/]
 ]
 
 def next_token
