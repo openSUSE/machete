@@ -45,21 +45,21 @@ attr : method_name "=" expression { result = { val[0].to_sym => val[2] } }
      | method_name "^=" SYMBOL {
          result = {
            val[0].to_sym => SymbolRegexpMatcher.new(
-             Regexp.new("^" + Regexp.escape(symbol_value(val[2])))
+             Regexp.new("^" + Regexp.escape(symbol_value(val[2]).to_s))
            )
          }
        }
      | method_name "$=" SYMBOL {
          result = {
            val[0].to_sym => SymbolRegexpMatcher.new(
-             Regexp.new(Regexp.escape(symbol_value(val[2])) + "$")
+             Regexp.new(Regexp.escape(symbol_value(val[2]).to_s) + "$")
            )
          }
        }
      | method_name "*=" SYMBOL {
          result = {
            val[0].to_sym => SymbolRegexpMatcher.new(
-             Regexp.new(Regexp.escape(symbol_value(val[2])))
+             Regexp.new(Regexp.escape(symbol_value(val[2]).to_s))
            )
          }
        }
@@ -142,7 +142,7 @@ literal : NIL     { result = LiteralMatcher.new(nil) }
         | TRUE    { result = LiteralMatcher.new(true) }
         | FALSE   { result = LiteralMatcher.new(false) }
         | INTEGER { result = LiteralMatcher.new(integer_value(val[0])) }
-        | SYMBOL  { result = LiteralMatcher.new(symbol_value(val[0]).to_sym) }
+        | SYMBOL  { result = LiteralMatcher.new(symbol_value(val[0])) }
         | STRING  { result = LiteralMatcher.new(string_value(val[0])) }
         | REGEXP  { result = LiteralMatcher.new(regexp_value(val[0])) }
 
@@ -186,7 +186,7 @@ def integer_value(value)
 end
 
 def symbol_value(value)
-  value.to_s[1..-1]
+  value.to_s[1..-1].to_sym
 end
 
 def string_value(value)
