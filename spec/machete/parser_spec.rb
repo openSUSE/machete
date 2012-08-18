@@ -349,7 +349,7 @@ module Machete
       ':a!'.should be_parsed_as(LiteralMatcher.new(:a!))
       ':a='.should be_parsed_as(LiteralMatcher.new(:a=))
 
-      # Instance vartiable name
+      # Instance variable name
       ':@a'.should be_parsed_as(LiteralMatcher.new(:@a))
       ':@z'.should be_parsed_as(LiteralMatcher.new(:@z))
       ':@A'.should be_parsed_as(LiteralMatcher.new(:@A))
