@@ -214,17 +214,10 @@ def string_value(value)
 end
 
 def regexp_value(value)
-  /\A\/(.*)\/([^\/]*)\z/u =~ value
-  content = $1
-  inline_options = $2
-  options = nil
+  /\A\/(.*)\/([imx]*)\z/ =~ value
+  pattern, options = $1, $2
 
-  if inline_options
-    options = inline_options.split(//).map { |opt| REGEXP_OPTIONS[opt] }
-    options = options.inject(&:+)
-  end
-
-  Regexp.new(content, options)
+  Regexp.new(pattern, options.chars.map { |ch| REGEXP_OPTIONS[ch] }.inject(:|))
 end
 
 # "^" needs to be here because if it were among operators recognized by
