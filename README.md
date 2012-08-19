@@ -1,12 +1,16 @@
 Machete
 =======
 
-Machete is a simple tool for matching Rubinius AST nodes against patterns. You can use it if you are writing any kind of tool that processes Ruby code and needs to do some work on specific types of nodes, needs to find patterns in the code, etc.
+Machete is a simple tool for matching Rubinius AST nodes against patterns. You
+can use it if you are writing any kind of tool that processes Ruby code and
+needs to do some work on specific types of nodes, needs to find patterns in the
+code, etc.
 
 Installation
 ------------
 
-You need to install [Rubinius](http://rubini.us/) first. You can then install Machete:
+You need to install [Rubinius](http://rubini.us/) first. You can then install
+Machete:
 
     $ gem install machete
 
@@ -17,7 +21,8 @@ First, require the library:
 
     require "machete"
 
-You can now use one of two methods Machete offers: `Machete.matches?` and `Machete.find`.
+You can now use one of two methods Machete offers: `Machete.matches?` and
+`Machete.find`.
 
 The `Machete.matches?` method matches a Rubinus AST node against a pattern:
 
@@ -29,7 +34,8 @@ The `Machete.matches?` method matches a Rubinus AST node against a pattern:
 
 (See below for pattern syntax description.)
 
-The `Machete.find` method finds all nodes in a Rubinius AST tree matching a pattern:
+The `Machete.find` method finds all nodes in a Rubinius AST tree matching a
+pattern:
 
     Machete.find('42 + 43 + 44'.to_ast, 'FixnumLiteral')
     # => [
@@ -51,7 +57,8 @@ Pattern Syntax
 
 ### Basics
 
-Rubinius AST consists of instances of classes that represent various types of nodes:
+Rubinius AST consists of instances of classes that represent various types of
+nodes:
 
     '42'.to_ast     # => #<Rubinius::AST::FixnumLiteral:0xf28 @value=42 @line=1>
     '"abcd"'.to_ast # => #<Rubinius::AST::StringLiteral:0xf60 @line=1 @string="abcd">
@@ -66,25 +73,31 @@ To specify multiple alternatives, use the choice operator:
     Machete.matches?('42'.to_ast,     'FixnumLiteral | StringLiteral') # => true
     Machete.matches?('"abcd"'.to_ast, 'FixnumLiteral | StringLiteral') # => true
 
-If you don't care about the node type at all, use the `any` keyword (this is most useful when matching arrays — see below):
+If you don't care about the node type at all, use the `any` keyword (this is
+most useful when matching arrays — see below):
 
     Machete.matches?('42'.to_ast,     'any') # => true
     Machete.matches?('"abcd"'.to_ast, 'any') # => true
 
 ### Node Attributes
 
-If you want to match a specific attribute of a node, specify its value inside `<...>` right after the node name:
+If you want to match a specific attribute of a node, specify its value inside
+`<...>` right after the node name:
 
     Machete.matches?('42'.to_ast, 'FixnumLiteral<value = 42>') # => true
     Machete.matches?('45'.to_ast, 'FixnumLiteral<value = 42>') # => false
 
-The attribute value can be `true`, `false`, `nil`, integer, string, symbol, array or other pattern. The last option means you can easily match nested nodes recursively. You can also specify multiple attributes:
+The attribute value can be `true`, `false`, `nil`, integer, string, symbol,
+array or other pattern. The last option means you can easily match nested nodes
+recursively. You can also specify multiple attributes:
 
     Machete.matches?('foo.bar'.to_ast, 'Send<receiver = Send<receiver = Self, name = :foo>, name = :bar>') # => true
 
 #### String Attributes
 
-When matching string attributes values, you don't have to do a whole-string match using the `=` operator. You can also match the beginning, the end or a part of a string attribute value using the `^=`, `$=` and `*=` operators:
+When matching string attributes values, you don't have to do a whole-string
+match using the `=` operator. You can also match the beginning, the end or a
+part of a string attribute value using the `^=`, `$=` and `*=` operators:
 
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string ^= "ab">') # => true
     Machete.matches?('"efgh"'.to_ast, 'StringLiteral<string ^= "ab">') # => false
@@ -106,7 +119,8 @@ Symbol attributes behave the same way as string attributes
 
 #### Regexp attributes
 
-You can use pure ruby regular expression with `*=` operator. You need to close regexp between `//`
+You can use pure ruby regular expression with `*=` operator. You need to close
+regexp between `//`
 
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /ab/>') # => true
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /^[0-9]{2}aab/>') # => false
@@ -119,7 +133,8 @@ Machete support also regexp with additional options (for example case sensitive)
 
 #### Array Attributes
 
-When matching array attribute values, the simplest way is to specify the array elements exactly. They will be matched one-by-one.
+When matching array attribute values, the simplest way is to specify the array
+elements exactly. They will be matched one-by-one.
 
     Machete.matches?('[1, 2]'.to_ast, 'ArrayLiteral<body = [FixnumLiteral<value = 1>, FixnumLiteral<value = 2>]>') # => true
 
@@ -128,7 +143,9 @@ If you don't care about the node type of some array elements, you can use `any`:
     Machete.matches?('[1, 2]'.to_ast,      'ArrayLiteral<body = [any, FixnumLiteral<value = 2>]>') # => true
     Machete.matches?('["abcd", 2]'.to_ast, 'ArrayLiteral<body = [any, FixnumLiteral<value = 2>]>') # => true
 
-The best thing about array matching is that you can use quantifiers for elements: `*`, `+`, `?`, `{n}`, `{n,}`, `{,n}`, `{m,n}`. Their meaning is the same as in Perl-like regular expressions:
+The best thing about array matching is that you can use quantifiers for
+elements: `*`, `+`, `?`, `{n}`, `{n,}`, `{,n}`, `{m,n}`. Their meaning is the
+same as in Perl-like regular expressions:
 
     Machete.matches?('[2]'.to_ast,          'ArrayLiteral<body = [any*, FixnumLiteral<value = 2>]>') # => true
     Machete.matches?('[1, 2]'.to_ast,       'ArrayLiteral<body = [any*, FixnumLiteral<value = 2>]>') # => true
@@ -158,7 +175,8 @@ The best thing about array matching is that you can use quantifiers for elements
     Machete.matches?('[1, 1, 2]'.to_ast,    'ArrayLiteral<body = [any{1,2}, FixnumLiteral<value = 2>]>') # => true
     Machete.matches?('[1, 1, 1, 2]'.to_ast, 'ArrayLiteral<body = [any{1,2}, FixnumLiteral<value = 2>]>') # => false
 
-There are also two unusual quantifiers: `{even}` and `{odd}`. They specify that the quantified expression must repeat even or odd number of times:
+There are also two unusual quantifiers: `{even}` and `{odd}`. They specify that
+the quantified expression must repeat even or odd number of times:
 
     Machete.matches?('[1, 2]'.to_ast,       'ArrayLiteral<body = [any{even}, FixnumLiteral<value = 2>]>') # => false
     Machete.matches?('[1, 1, 2]'.to_ast,    'ArrayLiteral<body = [any{even}, FixnumLiteral<value = 2>]>') # => true
@@ -166,26 +184,35 @@ There are also two unusual quantifiers: `{even}` and `{odd}`. They specify that 
     Machete.matches?('[1, 2]'.to_ast,       'ArrayLiteral<body = [any{odd}, FixnumLiteral<value = 2>]>') # => true
     Machete.matches?('[1, 1, 2]'.to_ast,    'ArrayLiteral<body = [any{odd}, FixnumLiteral<value = 2>]>') # => false
 
-These quantifiers are best used when matching hashes containing a specific key or value. This is because in Rubinius AST both hash keys and values are flattened into one array and the only thing distinguishing them is even or odd position.
+These quantifiers are best used when matching hashes containing a specific key
+or value. This is because in Rubinius AST both hash keys and values are
+flattened into one array and the only thing distinguishing them is even or odd
+position.
 
 ### More Information
 
-For more details about the syntax see the `lib/machete/parser.y` file which contains the pattern parser.
+For more details about the syntax see the `lib/machete/parser.y` file which
+contains the pattern parser.
 
 FAQ
 ---
 
-**Why did you chose Rubinius AST as a base? Aren't there other tools for Ruby parsing which are not VM-specific?**
+**Why did you chose Rubinius AST as a base? Aren't there other tools for Ruby
+parsing which are not VM-specific?**
 
 There are three other tools which were considered but each has its issues:
 
-* [parse_tree](http://parsetree.rubyforge.org/) — unmaintained and unsupported for 1.9
-* [ruby_parser](http://parsetree.rubyforge.org/) — sometimes reports wrong line numbers for the nodes (this is a killer for some use cases)
-* [Ripper](http://rubyforge.org/projects/ripper/) — usable but the generated AST is too low level (the patterns would be too complex and low-level)
+* [parse_tree](http://parsetree.rubyforge.org/) — unmaintained and unsupported
+  for 1.9
+* [ruby_parser](http://parsetree.rubyforge.org/) — sometimes reports wrong line
+   numbers for the nodes (this is a killer for some use cases)
+* [Ripper](http://rubyforge.org/projects/ripper/) — usable but the generated AST
+  is too low level (the patterns would be too complex and low-level)
 
 Rubinius AST is also by far the easiest to work with.
 
 Acknowledgement
 ---------------
 
-The general idea and inspiration for the pattern syntax was taken form Python's [2to3](http://docs.python.org/library/2to3.html) tool.
+The general idea and inspiration for the pattern syntax was taken form Python's
+[2to3](http://docs.python.org/library/2to3.html) tool.
