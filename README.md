@@ -9,8 +9,8 @@ code, etc.
 Installation
 ------------
 
-You need to install [Rubinius](http://rubini.us/) first. You can then install
-Machete:
+You need to install current development version of [Rubinius](http://rubini.us/)
+first. You can then install Machete:
 
     $ gem install machete
 
@@ -26,10 +26,10 @@ You can now use one of two methods Machete offers: `Machete.matches?` and
 
 The `Machete.matches?` method matches a Rubinus AST node against a pattern:
 
-    Machete.matches?('foo.bar'.to_ast, 'Send<receiver = Send<receiver = Self, name = :foo>, name = :bar>')
+    Machete.matches?('foo.bar'.to_ast, 'Send<name = :bar>')
     # => true
 
-    Machete.matches?('42'.to_ast, 'Send<receiver = Send<receiver = Self, name = :foo>, name = :bar>')
+    Machete.matches?('42'.to_ast, 'Send<name = :bar>')
     # => false
 
 (See below for pattern syntax description.)
@@ -44,13 +44,16 @@ pattern:
     #      #<Rubinius::AST::FixnumLiteral:0x10c0 @value=42 @line=1>
     #    ]
 
-    compiled_pattern = Machete::Parser.new.parse('FixnumLiteral')
-    Machete.find('42 + 43 + 44'.to_ast, compiled_pattern)
-    # => [
-    #      #<Rubinius::AST::FixnumLiteral:0x10b0 @value=44 @line=1>,
-    #      #<Rubinius::AST::FixnumLiteral:0x10b8 @value=43 @line=1>,
-    #      #<Rubinius::AST::FixnumLiteral:0x10c0 @value=42 @line=1>
-    #    ]
+Both `Machete.matches?` and `Machete.find` also accept patterns in their
+compiled form (instance of `Machete::Matchers::Matcher`):
+
+    Machete.matches?(
+      'foo.bar'.to_ast,
+      Machete::Matchers::NodeMatcher.new("Send",
+        :name => Machete::Matchers::LiteralMatcher.new(:bar)
+      )
+    )
+    # => true
 
 Pattern Syntax
 --------------
@@ -87,13 +90,13 @@ If you want to match a specific attribute of a node, specify its value inside
     Machete.matches?('42'.to_ast, 'FixnumLiteral<value = 42>') # => true
     Machete.matches?('45'.to_ast, 'FixnumLiteral<value = 42>') # => false
 
-The attribute value can be `true`, `false`, `nil`, integer, string, symbol,
-array or other pattern. The last option means you can easily match nested nodes
-recursively. You can also specify multiple attributes:
+The attribute value can be `nil`, `true`, `false`, integer, symbol, string,
+regexp, array or other pattern. The last option means you can easily match
+nested nodes recursively. You can also specify multiple attributes:
 
     Machete.matches?('foo.bar'.to_ast, 'Send<receiver = Send<receiver = Self, name = :foo>, name = :bar>') # => true
 
-#### String Attributes
+#### String And Symbol Attributes
 
 When matching string attributes values, you don't have to do a whole-string
 match using the `=` operator. You can also match the beginning, the end or a
@@ -106,30 +109,26 @@ part of a string attribute value using the `^=`, `$=` and `*=` operators:
     Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= "bc">') # => true
     Machete.matches?('"efgh"'.to_ast, 'StringLiteral<string *= "bc">') # => false
 
-#### Symbol Attributes
+Match symbol attributes works in the same way:
 
-Symbol attributes behave the same way as string attributes
+    Machete.matches?(':abcd'.to_ast, 'SymbolLiteral<value ^= :ab>') # => true
+    Machete.matches?(':efgh'.to_ast, 'SymbolLiteral<value ^= :ab>') # => false
+    Machete.matches?(':abcd'.to_ast, 'SymbolLiteral<value $= :cd>') # => true
+    Machete.matches?(':efgh'.to_ast, 'SymbolLiteral<value $= :cd>') # => false
+    Machete.matches?(':abcd'.to_ast, 'SymbolLiteral<value *= :bc>') # => true
+    Machete.matches?(':efgh'.to_ast, 'SymbolLiteral<value *= :bc>') # => false
 
-    Machete.matches?('ab()'.to_ast, 'SendWithArguments<string ^= :ab>') # => true
-    Machete.matches?('efgh()'.to_ast, 'SendWithArguments<name ^= :ab>') # => false
-    Machete.matches?('abcd()'.to_ast, 'SendWithArguments<name $= :cd>') # => true
-    Machete.matches?('efgh()'.to_ast, 'SendWithArguments<name $= :cd>') # => false
-    Machete.matches?('abcd()'.to_ast, 'SendWithArguments<name *= :bc>') # => true
-    Machete.matches?('efgh()'.to_ast, 'SendWithArguments<name *= :bc>') # => false
+In addition, you can match string and symbol attributes using regular
+expressions together with the `*=` operator:
 
-#### Regexp attributes
+    Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /bc/>') # => true
+    Machete.matches?('"efgh"'.to_ast, 'StringLiteral<string *= /bc/>') # => false
 
-You can use pure ruby regular expression with `*=` operator. You need to close
-regexp between `//`
+    Machete.matches?(':abcd'.to_ast, 'SymbolLiteral<value *= /bc/>') # => true
+    Machete.matches?(':efgh'.to_ast, 'SymbolLiteral<value *= /bc/>') # => false
 
-    Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /ab/>') # => true
-    Machete.matches?('"abcd"'.to_ast, 'StringLiteral<string *= /^[0-9]{2}aab/>') # => false
-    Machete.matches?('"19aabcd"'.to_ast, 'StringLiteral<string *= /^[0-9]{2}aab/>') # => true
-
-Machete support also regexp with additional options (for example case sensitive).
-
-    Machete.matches?('"AB"'.to_ast, 'StringLiteral<string *= /ab/>') # => false
-    Machete.matches?('"AB"'.to_ast, 'StringLiteral<string *= /ab/i>') # => true
+The regular expressions can take the `i`, `m` and `x` options with the same
+semantics as in Ruby.
 
 #### Array Attributes
 
@@ -210,6 +209,11 @@ There are three other tools which were considered but each has its issues:
   is too low level (the patterns would be too complex and low-level)
 
 Rubinius AST is also by far the easiest to work with.
+
+Compatibility
+-------------
+
+Machete is compatible with both the 1.8 and 1.9 mode of Rubinius.
 
 Acknowledgement
 ---------------
