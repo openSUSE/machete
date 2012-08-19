@@ -1,3 +1,15 @@
+0.5.0 (2012-08-19)
+------------------
+
+* Support for matching symbols using "^=", "$=" and "*=" operators.
+* Support for regexp literals and matching regexps using "*=" operator.
+* Extended symbol grammar to cover symbols denoting instance and class variable
+  names (:@foo, :@@bar).
+* Matchete#matches? and Machete#find accept the pattern also in compiled
+  form (instance of Machete:Matchers::Matcher class).
+* Works in Rubinius 1.9 mode.
+* Internal code improvements and fixes.
+
 0.4.0 (2011-10-18)
 ------------------
 
