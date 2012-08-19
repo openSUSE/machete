@@ -120,7 +120,7 @@ module Machete::Matchers
       @matcher = NodeMatcher.new(:RegexLiteral, @attrs)
     end
 
-    describe "initializa" do
+    describe "initialize" do
       describe "when passed one parameter" do
         it "sets attributes correctly" do
           matcher = NodeMatcher.new(:RegexLiteral)
