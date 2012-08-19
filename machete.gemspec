@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
     in the code, etc.
   EOT
 
-  s.author      = "David Majda"
-  s.email       = "dmajda@suse.de"
+  s.authors     = ["David Majda", "Piotr Niełacny"]
+  s.email       = ["dmajda@suse.cz", "piotr.nielacny@gmail.com"]
   s.homepage    = "https://github.com/openSUSE/machete"
   s.license     = "MIT"
 
