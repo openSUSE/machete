@@ -1,5 +1,6 @@
 0.4.0 (2011-10-18)
 ------------------
+
 * Support for "true", "false" and "nil" literals.
 * New "*=" operator matching part of a string.
 * Bundler support.
